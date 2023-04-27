@@ -88,15 +88,5 @@ module.exports = {
         bounce: "bounce 1s ease-in-out 2",
       },
     },
-    lineClamp: {
-      12: "12",
-      10: "10",
-      8: "8",
-      6: "6",
-      4: "4",
-      3: "3",
-      2: "2",
-    },
   },
-  plugins: [require("@tailwindcss/line-clamp")],
 }
