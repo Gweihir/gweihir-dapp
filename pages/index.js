@@ -5,10 +5,13 @@ import ProjectGweihir from "../public/Images/Project-Gwei-Logo.png"
 import SimonSays from "../public/Images/Choose_Address_Pipes.png"
 import MetaMask from "../public/Images/metamask-icon.png"
 
-import detectEthereumProvider from "@metamask/detect-provider"
-
 const inter = Inter({ subsets: ["latin"] })
 
+const DoStuff = () => {
+  if (typeof window !== "undefined" && window.ethereum !== undefined) {
+    ethereum.request({ method: "eth_requestAccounts" })
+  }
+}
 export default function Home() {
   return (
     <main
@@ -41,6 +44,7 @@ export default function Home() {
             width={60}
             as='image'
             className='cursor-pointer'
+            onClick={DoStuff}
           />
           <p>Connect</p>
         </div>
