@@ -23,7 +23,7 @@ export default function Home() {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [kusamaWallet, setKusamaWallet] = useState("")
   const [blockOrHash, setBlockOrHash] = useState("")
-  const [kusamaBalance, setKusamaBalance] = useState<string>()
+  const [kusamaBalance, setKusamaBalance] = useState<string>("")
 
   const { register, handleSubmit } = useForm<IFormData>()
 
@@ -137,14 +137,28 @@ export default function Home() {
             className='pl-1.5 h-8 w-64 bg-slate-200 rounded-sm text-black'
           ></input>
         </div>
-        <button type='submit'>Execute</button>
+        <button
+          disabled={!isWalletConnected}
+          title={isWalletConnected ? "" : "Connect your wallet to execute"}
+          type="submit"
+          className={`mt-4 border-2 rounded p-2 ${
+            isWalletConnected ? "" : "cursor-not-allowed"
+          }`}
+        >
+          Execute
+        </button>
       </form>
 
       <section className='flex flex-col gap-2 items-center'>
         <label className='text-gray-200 text-sm leading-4 pb-1' htmlFor='kusama-balance-result'>
           Query result
         </label>
-        <input id='kusama-balance-result' readOnly value={kusamaBalance} />
+        <input
+          id="kusama-balance-result"
+          readOnly
+          value={kusamaBalance}
+          className="p-4 text-black"
+        />
       </section>
 
       <p className='text-gray-200 pb-5 text-sm'>Learn more about Project Gweihir</p>
