@@ -16,7 +16,6 @@ export interface IFormData {
   kusamaWallet: string
   blockOrHash: string
 }
-
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
   const [provider, setProvider] = useState<ethers.BrowserProvider | ethers.AbstractProvider>()
@@ -24,6 +23,7 @@ export default function Home() {
   const [kusamaWallet, setKusamaWallet] = useState("")
   const [blockOrHash, setBlockOrHash] = useState("")
   const [kusamaBalance, setKusamaBalance] = useState<string>("")
+  console.log("kusamaBalance:", kusamaBalance)
 
   const { register, handleSubmit } = useForm<IFormData>()
 
@@ -119,31 +119,31 @@ export default function Home() {
         className='flex flex-col justify-center align-middle'
       >
         <div>
-          <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
-          {/* Should this be an autocomplete from Headless UI */}
-          <input
-            {...register("kusamaWallet")}
-            className='pl-1.5 h-8 w-64 bg-slate-200 rounded-sm text-black'
-          ></input>
-        </div>
+          <div>
+            <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
+            {/* Should this be an autocomplete from Headless UI */}
+            <input
+              {...register("kusamaWallet")}
+              className='pl-1.5 h-8 w-64 bg-slate-200 rounded-sm text-black'
+            ></input>
+          </div>
 
-        <div>
-          <p className='w-64 text-gray-200 text-sm leading-4 pb-1 mt-24'>
-            Input block number or hash to query at (optional - most recent if empty)
-          </p>
-          {/* Should this be an autocomplete from Headless UI */}
-          <input
-            {...register("blockOrHash")}
-            className='pl-1.5 h-8 w-64 bg-slate-200 rounded-sm text-black'
-          ></input>
+          <div>
+            <p className='w-64 text-gray-200 text-sm leading-4 pb-1 mt-5'>
+              Input block number or hash to query at (optional - most recent if empty)
+            </p>
+            {/* Should this be an autocomplete from Headless UI */}
+            <input
+              {...register("blockOrHash")}
+              className='pl-1.5 h-8 w-64 bg-slate-200 rounded-sm text-black'
+            ></input>
+          </div>
         </div>
         <button
           disabled={!isWalletConnected}
           title={isWalletConnected ? "" : "Connect your wallet to execute"}
-          type="submit"
-          className={`mt-4 border-2 rounded p-2 ${
-            isWalletConnected ? "" : "cursor-not-allowed"
-          }`}
+          type='submit'
+          className={`mt-12 border-2 rounded p-2 ${isWalletConnected ? "" : "cursor-not-allowed"}`}
         >
           Execute
         </button>
@@ -154,10 +154,10 @@ export default function Home() {
           Query result
         </label>
         <input
-          id="kusama-balance-result"
+          id='kusama-balance-result'
           readOnly
           value={kusamaBalance}
-          className="p-4 text-black"
+          className='p-4 w-64 bg-slate-200 rounded-sm text-black'
         />
       </section>
 
