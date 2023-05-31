@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "contract:gen:types": "typechain --target ethers-v6 --out-dir types/contracts 'contracts/*.json'"
+    "contract:gen:types": "typechain --target ethers-v6 --out-dir types/__generated__/contracts 'contracts/*.json'"
   },
   "dependencies": {
     "@metamask/detect-provider": "^2.0.0",
