@@ -227,7 +227,7 @@ export default function Home() {
         />
       </section>
 
-      <div className='border-2 rounded'>
+      <div className='border-2 rounded break-all'>
         <table>
           <tbody>
             <tr>
@@ -237,23 +237,13 @@ export default function Home() {
               <th className='border-r-2 rounded px-2 py-1'>Wallet</th>
               <th className='px-2 py-1'>Balance</th>
             </tr>
-            {Array.from({ length: 10 }).map((_, index) => (
-              <tr key={index}>
-                <td id='txId' className='border-r-2 rounded px-2 py-1'>
-                  {}
-                </td>
-                <td id='clReqId' className='border-r-2 rounded px-2 py-1'>
-                  {}
-                </td>
-                <td id='blockHash' className='border-r-2 rounded px-2 py-1'>
-                  {}
-                </td>
-                <td id='wallet' className='border-r-2 rounded px-2 py-1'>
-                  {}
-                </td>
-                <td id='balance' className='px-2 py-1'>
-                  {}
-                </td>
+            {queries.map((query) => (
+              <tr key={query.chainlinkRequestId}>
+                <td className='border-r-2 rounded px-2 py-1'>{query.txId}</td>
+                <td className='border-r-2 rounded px-2 py-1'>{query.chainlinkRequestId}</td>
+                <td className='border-r-2 rounded px-2 py-1'>{query.kusamaBlock}</td>
+                <td className='border-r-2 rounded px-2 py-1'>{query.kusamaAccount}</td>
+                <td className='px-2 py-1'>{query.freePlank}</td>
               </tr>
             ))}
           </tbody>

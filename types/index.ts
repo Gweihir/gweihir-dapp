@@ -7,9 +7,14 @@ declare global {
 }
 
 export interface KusamaQuery {
+  /** treat as primary key */
   chainlinkRequestId: string
-  txId: string // treat as primary key - what's returned from submitting the Ethereum transaction (e.g., "x0f61567373726162623")
-  kusamaBlock: string // block hash
-  kusamaAccount: string // Hash of account
-  freePlank?: string //  The Kusama account balance in plank
+  /** what's returned from submitting the Ethereum transaction (e.g., "x0f61567373726162623") */
+  txId: string
+  /** Kusama block hash */
+  kusamaBlock: string
+  /** Hash of account */
+  kusamaAccount: string
+  /** The Kusama account balance in plank */
+  freePlank?: string
 }
