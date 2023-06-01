@@ -4,30 +4,20 @@ import Image from "next/image"
 import ProjectGweihir from "../public/Images/Project-Gwei-Logo.png"
 import SimonSays from "../public/Images/Choose_Address_Pipes.png"
 import MetaMask from "../public/Images/metamask-icon.png"
-import { ethers } from "ethers"
+import { EventLog, ethers } from "ethers"
 import { useForm } from "react-hook-form"
 import { CHAINLINK_JOB_ID, CONSUMER_ADDRESS, ORACLE_ADDRESS } from "@/app-constants"
 import { GeneralConsumer__factory } from "@/types/__generated__/contracts"
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
 
-const inter = Inter({ subsets: ["latin"] })
-
-export interface IFormData {
-  kusamaWallet: string
-  blockOrHash: string
-}
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
   const [provider, setProvider] = useState<ethers.BrowserProvider | ethers.AbstractProvider>()
   const [isWalletConnected, setIsWalletConnected] = useState(false)
-  const [kusamaWallet, setKusamaWallet] = useState("")
-  const [blockOrHash, setBlockOrHash] = useState("")
   const [kusamaBalance, setKusamaBalance] = useState<string>("")
 
   const cacheRef = useRef<QueryCacheService>()
-
-  console.log("kusamaBalance:", kusamaBalance)
 
   const [queries, setQueries] = useState<KusamaQuery[]>([])
 
@@ -85,65 +75,77 @@ export default function Home() {
 
       const oracleResponsePath = "data,free"
 
+      // Propose the transaction to the user
       const tx = await contract.requestValue(
-        ORACLE_ADDRESS,
-        CHAINLINK_JOB_ID,
-        2,
-        ["address", "blockHash", "path"],
-        [kusamaWallet, blockOrHash, oracleResponsePath]
+        ORACLE_ADDRESS, // _oracle
+        CHAINLINK_JOB_ID, // _jobId
+        2, // resultType UINT_REQUEST_TYPE
+        ["address", "blockHash", "path"], // requestParamNames
+        [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
 
-      console.log("response", tx)
-      console.log("value", tx.value.toString())
-      console.log("response.data", tx.data)
+      console.log("tx", tx)
 
-      const rc = await tx.wait()
-      console.log("rc", rc)
-      const result = await rc?.getResult()
+      const receipt = await tx.wait()
 
-      console.log("result", result)
+      if (receipt) {
+        // Get the Chainlink request id from the "ChainlinkRequested" event which can be found
+        // in the transaction receipt's logs
+        const chainlinkRequestedEvent = receipt.logs
+          .filter((log): log is EventLog => log instanceof EventLog)
+          .find((log) => {
+            const eventName = contract.getEvent("ChainlinkRequested").name
 
-      // TODO: Check if this is actually the value we want (should be the chainlink request id)
-      const chainlinkRequestId = tx.data
+            return (
+              // Double checking that event is from the correct address
+              log.address === CONSUMER_ADDRESS && log.fragment.name === eventName
+            )
+          })
 
-      const query: KusamaQuery = {
-        // chainlinkRequestId: chainlinkRequestId, // TODO: Check this
-        chainlinkRequestId,
-        txId: tx.hash,
-        kusamaBlock: blockOrHash,
-        kusamaAccount: kusamaWallet,
-        freePlank: tx.value.toString(),
-      }
+        const chainlinkRequestId = chainlinkRequestedEvent?.topics[1]
+        console.log("requestId", chainlinkRequestId)
 
-      saveRequest(query)
-
-      // TODO: Record the query (including the transaction id) to local storage
-      // create({ txId: result.hash, kusamaAccount: kusamaAddress, kusamaBlock: kusamaBlockHash })
-
-      // Listen for the RequestKusamaAccountBalanceFulfilled event to be emitted
-      contract.on(
-        contract.getEvent("RequestUintValueFulfilled"),
-        (_chainlinkRequestId, freePlank, event) => {
-          console.log("event received", _chainlinkRequestId, freePlank, event)
-          // Filter by Chainlink Request ID
-          if (chainlinkRequestId === _chainlinkRequestId) {
-            setKusamaBalance(freePlank.toString())
-            updateRequest(chainlinkRequestId, {
-              freePlank: freePlank.toString(),
-            })
-
-            // Stop listening for event
-            event.removedEvent()
-          }
+        if (!chainlinkRequestId) {
+          // TODO: Handle missing Chainlink request id
+          return
         }
-      )
-      console.log("result", tx)
-      // response.hash contains the Ethereum transaction id (can use to view on Etherscan)
+
+        const query: KusamaQuery = {
+          chainlinkRequestId,
+          txId: tx.hash,
+          kusamaBlock: kusamaBlockHash,
+          kusamaAccount: kusamaAddress,
+          freePlank: tx.value.toString(),
+        }
+
+        saveRequest(query)
+
+        // TODO: Record the query (including the transaction id) to local storage
+        // create({ txId: result.hash, kusamaAccount: kusamaAddress, kusamaBlock: kusamaBlockHash })
+
+        // Listen for the RequestKusamaAccountBalanceFulfilled event to be emitted
+        contract.on(
+          contract.getEvent("RequestUintValueFulfilled"),
+          (_chainlinkRequestId, freePlank, event) => {
+            console.log("event received", _chainlinkRequestId, freePlank, event)
+            // Filter by Chainlink request id
+            if (chainlinkRequestId === _chainlinkRequestId) {
+              setKusamaBalance(freePlank.toString())
+              updateRequest(chainlinkRequestId, {
+                freePlank: freePlank.toString(),
+              })
+
+              // Stop listening for event
+              event.removedEvent()
+            }
+          }
+        )
+      }
     } catch (e) {
+      // TODO: Handle error
       console.error(e)
     }
   }
-  // console.log("kusamaWallet:", kusamaWallet, "blockOrHash:", blockOrHash)
 
   return (
     <main
@@ -178,8 +180,6 @@ export default function Home() {
         onSubmit={handleSubmit((data) => {
           localStorage.setItem("kusamaWallet", data.kusamaWallet)
           localStorage.setItem("blockOrHash", data.blockOrHash)
-          setKusamaWallet(data.kusamaWallet)
-          setBlockOrHash(data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
         })}
         className='flex flex-col justify-center align-middle'
@@ -264,6 +264,14 @@ export default function Home() {
     </main>
   )
 }
+
+const inter = Inter({ subsets: ["latin"] })
+
+export interface IFormData {
+  kusamaWallet: string
+  blockOrHash: string
+}
+
 {
   /* {queries.map((query) => {
 return (
