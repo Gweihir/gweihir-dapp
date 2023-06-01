@@ -115,15 +115,11 @@ export default function Home() {
           txId: tx.hash,
           kusamaBlock: kusamaBlockHash,
           kusamaAccount: kusamaAddress,
-          freePlank: tx.value.toString(),
         }
 
         saveRequest(query)
 
-        // TODO: Record the query (including the transaction id) to local storage
-        // create({ txId: result.hash, kusamaAccount: kusamaAddress, kusamaBlock: kusamaBlockHash })
-
-        // Listen for the RequestKusamaAccountBalanceFulfilled event to be emitted
+        // Listen for the RequestUintValueFulfilled event to be emitted for the specific Chainlink request id
         contract.on(
           contract.getEvent("RequestUintValueFulfilled"),
           (_chainlinkRequestId, freePlank, event) => {
@@ -260,31 +256,4 @@ const inter = Inter({ subsets: ["latin"] })
 export interface IFormData {
   kusamaWallet: string
   blockOrHash: string
-}
-
-{
-  /* {queries.map((query) => {
-return (
-  <tr key={query.txId}>
-    <th>{query.txId}</th>
-    <th>{query.chainlinkRequestId}</th>
-    <th>{query.kusamaBlock}</th>
-    <th>{query.kusamaAccount}</th>
-    <th>{query.freePlank}</th>
-  </tr>
-)
-})} */
-}
-{
-  /* {queries.map((query) => {
-return (
-  <tr key={query.txId}>
-    <th>{query.txId}</th>
-    <th>{query.chainlinkRequestId}</th>
-    <th>{query.kusamaBlock}</th>
-    <th>{query.kusamaAccount}</th>
-    <th>{query.freePlank}</th>
-  </tr>
-)
-})} */
 }
