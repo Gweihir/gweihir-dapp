@@ -10,6 +10,7 @@ import { CHAINLINK_JOB_ID, CONSUMER_ADDRESS, ORACLE_ADDRESS } from "@/app-consta
 import { GeneralConsumer__factory } from "@/types/__generated__/contracts"
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
+import CopyButton from "./components/copy-button"
 
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
@@ -223,23 +224,41 @@ export default function Home() {
         />
       </section>
 
-      <div className='border-2 rounded break-all'>
-        <table>
-          <tbody>
-            <tr>
-              <th className='border-r-2 rounded px-2 py-1'>TX ID</th>
-              <th className='border-r-2 rounded px-2 py-1'>Chainlink Request ID</th>
+      <div className='border-2 rounded break-all w-full lg:w-2/3 xl:w-1/2 mt-12'>
+        <table className=''>
+          <tbody className=''>
+            <tr className='bg-slate-600'>
+              <th className='border-r-2 rounded w- px-2 py-1'>TX ID</th>
+              <th className='border-r-2 rounded px-2 py-1'>
+                <p>Chainlink</p>
+                <p>Request ID</p>
+              </th>
               <th className='border-r-2 rounded px-2 py-1'>Block hash</th>
               <th className='border-r-2 rounded px-2 py-1'>Wallet</th>
-              <th className='px-2 py-1'>Balance</th>
+              <th className='px-2 py-1 w-24'>Balance</th>
             </tr>
             {queries.map((query) => (
               <tr key={query.chainlinkRequestId}>
-                <td className='border-r-2 rounded px-2 py-1'>{query.txId}</td>
-                <td className='border-r-2 rounded px-2 py-1'>{query.chainlinkRequestId}</td>
-                <td className='border-r-2 rounded px-2 py-1'>{query.kusamaBlock}</td>
-                <td className='border-r-2 rounded px-2 py-1'>{query.kusamaAccount}</td>
-                <td className='px-2 py-1'>{query.freePlank}</td>
+                <td className='border-r-2 px-2 py-1'>
+                  <p className='line-clamp-1'>{query.txId}</p>
+                </td>
+                <td className='border-r-2 px-2 py-1'>
+                  <p className='line-clamp-1'>{query.chainlinkRequestId}</p>
+                </td>
+                <td className='border-r-2 px-2 py-1'>
+                  <p className='line-clamp-1'>{query.kusamaBlock}</p>
+                </td>
+                <td className='border-r-2 px-2 py-1'>
+                  <p className='line-clamp-1'>{query.kusamaAccount}</p>
+                </td>
+                <td className='px-2 py-1'>
+                  <div className='flex flex-row '>
+                    <p className='w-7/10 line-clamp-1'>{query.freePlank}</p>
+                    <p className='flex flex-col items-center'>
+                      {query.freePlank && <CopyButton text={query.freePlank} />}
+                    </p>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
