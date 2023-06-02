@@ -86,6 +86,8 @@ module.exports = {
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         wiggle: "wiggle 10s ease-out",
         bounce: "bounce 1s ease-in-out 2",
+        "spin-slow": "spin 1s linear infinite",
+        "spin-slower": "spin 4s linear infinite",
       },
     },
   },
