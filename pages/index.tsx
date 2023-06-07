@@ -10,27 +10,22 @@ import { GeneralConsumer__factory } from "@/types/__generated__/contracts"
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
 import CopyButton from "./components/copy-button"
-import spinnerOne from "../public/Images/spinner_01.png"
-import spinnerTwo from "../public/Images/spinner_02.png"
+import Pending from "./components/pending-animate"
+import Waiting from "./components/waiting-animate"
 
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
   const [provider, setProvider] = useState<ethers.BrowserProvider | ethers.AbstractProvider>()
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [kusamaBalance, setKusamaBalance] = useState<string>("")
+  const [queries, setQueries] = useState<KusamaQuery[]>([])
+  const [pending, setPending] = useState<boolean>(false)
+  const [waiting, setWaiting] = useState<boolean>(false)
+  const [balancePending, setBalancePending] = useState<boolean>(false)
 
   const cacheRef = useRef<QueryCacheService>()
 
-  const [queries, setQueries] = useState<KusamaQuery[]>([])
-
   const { register, handleSubmit } = useForm<IFormData>()
-
-  useEffect(() => {
-    cacheRef.current = QueryCacheService.createInstance()
-
-    const queries = cacheRef.current.getAll()
-    setQueries(queries)
-  }, [])
 
   async function connectWallet() {
     if (!window.ethereum) {
@@ -52,6 +47,18 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    cacheRef.current = QueryCacheService.createInstance()
+
+    try {
+      const queries = cacheRef.current.getAll()
+      setQueries(queries)
+    } catch (error) {
+      console.error("An error occurred:", error)
+      return alert("An error has occurred.")
+    }
+  }, [balancePending])
+
   const saveRequest = (query: KusamaQuery) => {
     // Save query request to local storage
     if (cacheRef.current) {
@@ -62,11 +69,13 @@ export default function Home() {
 
   const updateRequest = (chainlinkId: string, query: Partial<KusamaQuery>) => {
     if (cacheRef.current) {
+      // setBalancePending(true)
+      setPending(false)
+
       cacheRef.current.update(chainlinkId, query)
       setQueries(cacheRef.current.getAll())
     }
   }
-
   /**
    * Request kusama account balance
    * TODO: Maybe set up contract only once at connect time instead of every time we request Kusama balance
@@ -86,11 +95,11 @@ export default function Home() {
         [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
 
-      console.log("tx", tx)
-
       const receipt = await tx.wait()
-
+      setPending(true)
+      setWaiting(false)
       if (receipt) {
+        setPending(true)
         // Get the Chainlink request id from the "ChainlinkRequested" event which can be found
         // in the transaction receipt's logs
         const chainlinkRequestedEvent = receipt.logs
@@ -108,6 +117,7 @@ export default function Home() {
         console.log("requestId", chainlinkRequestId)
 
         if (!chainlinkRequestId) {
+          return alert("Chainlink request ID Missing.")
           // TODO: Handle missing Chainlink request id
           return
         }
@@ -122,6 +132,7 @@ export default function Home() {
         saveRequest(query)
 
         // Listen for the RequestUintValueFulfilled event to be emitted for the specific Chainlink request id
+
         contract.on(
           contract.getEvent("RequestUintValueFulfilled"),
           (_chainlinkRequestId, freePlank, event) => {
@@ -135,6 +146,7 @@ export default function Home() {
 
               // Stop listening for event
               event.removedEvent()
+              // setBalancePending(false)
             }
           }
         )
@@ -142,7 +154,16 @@ export default function Home() {
     } catch (e) {
       // TODO: Handle error
       console.error(e)
+      setPending(false)
+      setWaiting(false)
     }
+  }
+  function plankConversion(x: string | undefined): number | undefined {
+    if (x === undefined) {
+      return undefined
+    }
+    const result = parseFloat(x) / 10 ** 12
+    return parseFloat(result.toFixed(3))
   }
 
   return (
@@ -170,6 +191,7 @@ export default function Home() {
 
       <form
         onSubmit={handleSubmit((data) => {
+          setWaiting(true)
           localStorage.setItem("kusamaWallet", data.kusamaWallet)
           localStorage.setItem("blockOrHash", data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
@@ -196,6 +218,7 @@ export default function Home() {
               className='pl-1.5 h-8 w-full sm:w-96 md:w-7/12 lg:w-1/2 xl:w-1/3 bg-slate-200 rounded-sm text-black'
             ></input>
           </div>
+          {/* {cacheRef.current.cache} */}
           <button
             disabled={!isWalletConnected}
             title={isWalletConnected ? "" : "Connect your wallet to execute"}
@@ -206,71 +229,211 @@ export default function Home() {
           >
             Execute
           </button>
-          <div className='pt-10'>
-            <Image
-              className='animate-spin-slower'
-              src={spinnerOne}
-              alt='Loading spinner'
-              width={20}
-              height={20}
-            />
-          </div>
-          <div className='pt-10'>
-            <Image
-              className='animate-spin-slow'
-              src={spinnerTwo}
-              alt='Loading spinner'
-              width={20}
-              height={20}
-            />
-          </div>
         </div>
       </form>
 
-      <div className='flex flex-col justify-center border-2 rounded break-all mx-auto w-full lg:w-2/3 xl:w-1/2 mt-12'>
+      <div className='flex flex-col justify-center border-2 border-gray-600 rounded break-all mx-auto w-full lg:w-2/3 xl:w-1/2 mt-12'>
         <table>
           <tbody>
-            <tr className='bg-slate-600'>
-              <th className='border-r-2 px-2 py-1'>TX ID</th>
-              <th className='border-r-2 px-2 py-1'>
-                <p>Chainlink</p>
-                <p>Request ID</p>
+            <tr className='px-0 bg-slate-800'>
+              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
+                TX ID
               </th>
-              <th className='border-r-2 px-2 py-1'>Block hash</th>
-              <th className='border-r-2 px-2 py-1'>Wallet</th>
-              <th className='px-2 py-1 w-24'>Balance</th>
-            </tr>
-            {queries.map((query) => (
-              <tr key={query.chainlinkRequestId}>
-                <td className='border-r-2 px-2 py-1'>
-                  <p className='line-clamp-1'>{query.txId}</p>
-                </td>
-                <td className='border-r-2 px-2 py-1'>
-                  <p className='line-clamp-1'>{query.chainlinkRequestId}</p>
-                </td>
-                <td className='border-r-2 px-2 py-1'>
-                  <p className='line-clamp-1'>{query.kusamaBlock}</p>
-                </td>
-                <td className='border-r-2 px-2 py-1'>
-                  <p className='line-clamp-1'>{query.kusamaAccount}</p>
-                </td>
-                <td className='px-2 py-1'>
-                  <div className='flex flex-row '>
-                    <p className='w-7/10 line-clamp-1'>{query.freePlank}</p>
-                    <p className='flex flex-col items-center'>
-                      {query.freePlank && <CopyButton text={query.freePlank} />}
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            ))}
+              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
+                Chain Req ID
+              </th>
+              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
+                Block hash
+              </th>
+              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
+                Wallet
+              </th>
+              <th className='px-2 py-3 w-24 font-medium text-sm truncate'>Balance</th>
+            </tr>{" "}
+            {waiting && (
+              <>
+                <tr>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Waiting />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Waiting />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Waiting />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Waiting />
+                  </td>
+                  <td className='px-2 pb-3 bg-slate-600'>
+                    <Waiting />
+                  </td>
+                </tr>
+                {queries
+                  .slice(-10, -1)
+                  .reverse()
+                  .map((query, index) => (
+                    <tr key={query.chainlinkRequestId}>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.txId}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.chainlinkRequestId}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.kusamaBlock}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.kusamaAccount}</p>
+                      </td>
+                      <td className={`px-2 py-1' ${index % 2 !== 0 ? "bg-slate-600" : "bg-none"}`}>
+                        <div className='flex flex-row justify-center'>
+                          <p className='w-7/10 line-clamp-1'>{plankConversion(query.freePlank)}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </>
+            )}
+            {pending && (
+              <>
+                <tr>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Pending />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Pending />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Pending />
+                  </td>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                    <Pending />
+                  </td>
+                  <td className='px-2 pb-3 bg-slate-600'>
+                    <Pending />
+                  </td>
+                </tr>
+                {queries
+                  .slice(-10, -1)
+                  .reverse()
+                  .map((query, index) => (
+                    <tr key={query.chainlinkRequestId}>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.txId}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.chainlinkRequestId}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.kusamaBlock}</p>
+                      </td>
+                      <td
+                        className={`border-r-2 border-gray-500 px-2 py-1 ${
+                          index % 2 !== 0 ? "bg-slate-600" : "bg-none"
+                        }`}
+                      >
+                        <p className='line-clamp-1'>{query.kusamaAccount}</p>
+                      </td>
+                      <td className={`px-2 py-1' ${index % 2 !== 0 ? "bg-slate-600" : "bg-none"}`}>
+                        <div className='flex flex-row justify-center'>
+                          <p className='w-7/10 line-clamp-1'>{plankConversion(query.freePlank)}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </>
+            )}
+            {!pending &&
+              !waiting &&
+              queries
+                .slice(-10)
+                .reverse()
+                .map((query, index) => (
+                  <tr key={query.chainlinkRequestId}>
+                    <td
+                      className={`border-r-2 border-gray-500 px-2 py-1 ${
+                        index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                      }`}
+                    >
+                      <p className='line-clamp-1 hover:line-clamp-none text-md'>{query.txId}</p>
+                    </td>
+                    <td
+                      className={`border-r-2 border-gray-500 px-2 py-1 ${
+                        index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                      }`}
+                    >
+                      <p className='line-clamp-1 hover:line-clamp-none text-md'>
+                        {query.chainlinkRequestId}
+                      </p>
+                    </td>
+                    <td
+                      className={`border-r-2 border-gray-500 px-2 py-1 ${
+                        index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                      }`}
+                    >
+                      <p className='line-clamp-1 hover:line-clamp-none text-md'>
+                        {query.kusamaBlock}
+                      </p>
+                    </td>
+                    <td
+                      className={`flex flex-row hover:truncate justify-between border-r-2 border-gray-500  pl-2 pr-1 py-1 ${
+                        index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                      }`}
+                    >
+                      <p className='line-clamp-1 hover:line-clamp-none text-md pr-1'>
+                        {query.kusamaAccount}
+                      </p>
+                      <CopyButton text={query.kusamaAccount} />
+                    </td>
+                    <td className={`px-2 py-1' ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}>
+                      <div className='flex flex-row justify-center'>
+                        <p className='w-7/10 line-clamp-1 hover:line-clamp-none text-md'>
+                          {plankConversion(query.freePlank)}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
       </div>
 
-      <p className='text-gray-200 pb-5 text-sm fixed bottom-0 left-0 right-0 text-center mx-auto'>
+      <a
+        href='https://www.gweihir.io'
+        target='_blank'
+        className='text-gray-200 hover:text-accent pb-5 text-sm text-center mx-auto pt-12'
+      >
         Learn more about Project Gweihir
-      </p>
+      </a>
     </main>
   )
 }
