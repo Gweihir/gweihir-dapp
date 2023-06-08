@@ -81,6 +81,8 @@ export default function Home() {
    * TODO: Maybe set up contract only once at connect time instead of every time we request Kusama balance
    */
   async function requestBalance(kusamaAddress: string, kusamaBlockHash: string) {
+    setWaiting(true)
+
     try {
       const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, signer)
 
@@ -158,17 +160,26 @@ export default function Home() {
       setWaiting(false)
     }
   }
+
   function plankConversion(x: string | undefined): number | undefined {
     if (x === undefined) {
       return undefined
     }
     const result = parseFloat(x) / 10 ** 12
-    return parseFloat(result.toFixed(3))
+    return parseFloat(result.toString())
+  }
+
+  function reducedPlankConversion(x: string | undefined): number | undefined {
+    if (x === undefined) {
+      return undefined
+    }
+    const result = parseFloat(x) / 10 ** 12
+    return parseFloat(result.toFixed(2))
   }
 
   return (
     <main
-      className={`flex flex-col w-full min-h-screen px-10 sm:px-24 pt-12 bg-gradient-to-b from-slate-600 to-slate-800 ${inter.className}`}
+      className={`flex flex-col w-full min-h-screen px-0 sm:px-24 pt-12 bg-gradient-to-b from-slate-600 to-slate-800 ${inter.className}`}
     >
       <div className='z-10 w-full text-sm flex justify-center'>
         <div className='relative'>
@@ -180,7 +191,7 @@ export default function Home() {
             blurDataURL={"../public/Images/Project-Gwei-Logo.png"}
           />
 
-          <div className='absolute left-[165px] xl:left-[500px] lg:left-[450px] sm:left-[400px] top-[290px] sm:top-1/4 transform -translate-y-1/2'>
+          <div className='absolute left-[165px] xl:left-[500px] lg:left-[450px] sm:left-[400px] sm:top-1/4 top-[230px]'>
             <button onClick={connectWallet}>
               <Image src={MetaMask} alt='MetaMask Logo' width={60} className='cursor-pointer' />
             </button>
@@ -191,7 +202,7 @@ export default function Home() {
 
       <form
         onSubmit={handleSubmit((data) => {
-          setWaiting(true)
+          // setWaiting(true)
           localStorage.setItem("kusamaWallet", data.kusamaWallet)
           localStorage.setItem("blockOrHash", data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
@@ -232,20 +243,20 @@ export default function Home() {
         </div>
       </form>
 
-      <div className='flex flex-col justify-center border-2 border-gray-600 rounded break-all mx-auto w-full lg:w-2/3 xl:w-1/2 mt-12'>
+      <div className='flex flex-col justify-center border-2 border-gray-600 rounded break-all mx-auto w-full lg:w-2/3 xl:w-1/2 mt-12 sm:duration-200 sm:hover:scale-105 '>
         <table>
           <tbody>
             <tr className='px-0 bg-slate-800'>
               <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
-                TX ID
+                Tx ID
               </th>
               <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
-                Chain Req ID
+                Req ID
               </th>
               <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
                 Block hash
               </th>
-              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate'>
+              <th className='border-r-2 border-gray-500 px-2 py-3 font-medium text-sm truncate '>
                 Wallet
               </th>
               <th className='px-2 py-3 w-24 font-medium text-sm truncate'>Balance</th>
@@ -253,24 +264,24 @@ export default function Home() {
             {waiting && (
               <>
                 <tr>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Waiting />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Waiting />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Waiting />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Waiting />
                   </td>
-                  <td className='px-2 pb-3 bg-slate-600'>
+                  <td className='px-2 bg-slate-600'>
                     <Waiting />
                   </td>
                 </tr>
                 {queries
-                  .slice(-10, -1)
+                  .slice(-9)
                   .reverse()
                   .map((query, index) => (
                     <tr key={query.chainlinkRequestId}>
@@ -313,25 +324,25 @@ export default function Home() {
             )}
             {pending && (
               <>
-                <tr>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                {/* <tr>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Pending />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Pending />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Pending />
                   </td>
-                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2 pb-3'>
+                  <td className='border-r-2 bg-slate-600 border-gray-500 px-2'>
                     <Pending />
                   </td>
-                  <td className='px-2 pb-3 bg-slate-600'>
+                  <td className='px-2 bg-slate-600'>
                     <Pending />
                   </td>
-                </tr>
+                </tr> */}
                 {queries
-                  .slice(-10, -1)
+                  .slice(-10)
                   .reverse()
                   .map((query, index) => (
                     <tr key={query.chainlinkRequestId}>
@@ -365,7 +376,15 @@ export default function Home() {
                       </td>
                       <td className={`px-2 py-1' ${index % 2 !== 0 ? "bg-slate-600" : "bg-none"}`}>
                         <div className='flex flex-row justify-center'>
-                          <p className='w-7/10 line-clamp-1'>{plankConversion(query.freePlank)}</p>
+                          {query.freePlank ? (
+                            <p className='w-7/10 line-clamp-1'>
+                              {plankConversion(query.freePlank)}
+                            </p>
+                          ) : (
+                            <div>
+                              <Pending />
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -384,42 +403,77 @@ export default function Home() {
                         index % 2 === 0 ? "bg-slate-600" : "bg-none"
                       }`}
                     >
-                      <p className='line-clamp-1 hover:line-clamp-none text-md'>{query.txId}</p>
+                      {query.txId ? (
+                        <CopyButton text={query.txId}>
+                          <p className='line-clamp-1 text-md hover:text-accent'>{query.txId}</p>
+                        </CopyButton>
+                      ) : (
+                        <p className='flex justify-center'>NA</p>
+                      )}
                     </td>
                     <td
                       className={`border-r-2 border-gray-500 px-2 py-1 ${
                         index % 2 === 0 ? "bg-slate-600" : "bg-none"
                       }`}
                     >
-                      <p className='line-clamp-1 hover:line-clamp-none text-md'>
-                        {query.chainlinkRequestId}
-                      </p>
+                      {query.chainlinkRequestId ? (
+                        <CopyButton text={query.chainlinkRequestId}>
+                          <p className='line-clamp-1 text-md hover:text-accent'>
+                            {query.chainlinkRequestId}
+                          </p>
+                        </CopyButton>
+                      ) : (
+                        <p className='flex justify-center'>NA</p>
+                      )}
                     </td>
                     <td
                       className={`border-r-2 border-gray-500 px-2 py-1 ${
                         index % 2 === 0 ? "bg-slate-600" : "bg-none"
                       }`}
                     >
-                      <p className='line-clamp-1 hover:line-clamp-none text-md'>
-                        {query.kusamaBlock}
-                      </p>
+                      {query.kusamaBlock ? (
+                        <CopyButton text={query.kusamaBlock}>
+                          <p className='justify-center line-clamp-1 text-md hover:text-accent'>
+                            {query.kusamaBlock}
+                          </p>
+                        </CopyButton>
+                      ) : (
+                        <p className='flex justify-center'>NA</p>
+                      )}
                     </td>
                     <td
-                      className={`flex flex-row hover:truncate justify-between border-r-2 border-gray-500  pl-2 pr-1 py-1 ${
+                      className={`border-r-2 border-gray-500 px-2 py-1 ${
                         index % 2 === 0 ? "bg-slate-600" : "bg-none"
                       }`}
                     >
-                      <p className='line-clamp-1 hover:line-clamp-none text-md pr-1'>
-                        {query.kusamaAccount}
-                      </p>
-                      <CopyButton text={query.kusamaAccount} />
+                      {" "}
+                      {query.kusamaAccount ? (
+                        <CopyButton text={query.kusamaAccount}>
+                          <p className='line-clamp-1 text-md pr-1 hover:text-accent cursor-pointer'>
+                            {query.kusamaAccount}
+                          </p>
+                        </CopyButton>
+                      ) : (
+                        <p className='justify-center flex'>NA</p>
+                      )}
                     </td>
-                    <td className={`px-2 py-1' ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}>
-                      <div className='flex flex-row justify-center'>
-                        <p className='w-7/10 line-clamp-1 hover:line-clamp-none text-md'>
-                          {plankConversion(query.freePlank)}
-                        </p>
-                      </div>
+                    <td
+                      className={`px-1 py-1 flex justify-center ${
+                        index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                      }`}
+                    >
+                      {query.freePlank ? (
+                        <CopyButton text={plankConversion(query.freePlank)?.toString()}>
+                          <div className='flex flex-row justify-center items-center hover:text-accent'>
+                            <p className='line-clamp-1 text-md'>
+                              {reducedPlankConversion(query.freePlank)}
+                            </p>
+                            <p className='text-[.5rem] pt-1.5 pl-0.5'>KSM</p>
+                          </div>
+                        </CopyButton>
+                      ) : (
+                        <p className='justify-center flex'>NA</p>
+                      )}
                     </td>
                   </tr>
                 ))}
