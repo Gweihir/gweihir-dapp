@@ -31,9 +31,9 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
   return (
     <>
       <div className='flex justify-center'>
-        <div className='flex flex-row border-2 border-gray-600 rounded mx-auto w-full lg:w-2/3 xl:w-1/2 mt-12 sm:duration-200 sm:hover:scale-105 sm:mx-0'>
+        <div className='flex flex-row border-2 border-gray-600 rounded mx-auto w-full lg:w-2/3 xl:w-2/3 sm:duration-200 sm:hover:scale-105 sm:mx-0'>
           <div
-            className={`w-2/12 hover:w-6/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-3/12 hover:w-7/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3 line-clamp-1'>
               {headings[0]}
@@ -125,7 +125,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               ))}
           </div>
           <div
-            className={`w-3/12 hover:w-7/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-2/12 hover:w-6/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3'>
               {headings[3]}

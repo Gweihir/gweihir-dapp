@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react"
 import { Inter } from "next/font/google"
 import Image from "next/image"
 import ProjectGweihir from "../public/Images/Project-Gwei-Logo.png"
-import MetaMask from "../public/Images/metamask-icon.png"
+import MetaMask from "../public/Images/metamask-connect.png"
+import MetaMaskRed from "../public/Images/metamask-red-connect.png"
 import { EventLog, ethers } from "ethers"
 import { useForm } from "react-hook-form"
 import { CHAINLINK_JOB_ID, CONSUMER_ADDRESS, ORACLE_ADDRESS } from "@/app-constants"
@@ -180,25 +181,26 @@ export default function Home() {
 
   return (
     <main
-      className={`flex flex-col w-full min-h-screen px-0 sm:px-24 pt-12 bg-gradient-to-b from-slate-600 to-slate-800 ${inter.className}`}
+      className={`flex flex-col w-full min-h-screen px-0 sm:px-24 pt-6 bg-gradient-to-b from-slate-600 to-slate-800 transform duration-300 ${inter.className}`}
     >
-      <div className='z-10 w-full text-sm flex flex-row justify-center'>
-        <div className='relative'>
-          <Image
-            src={ProjectGweihir}
-            alt='Project Gweihir Logo'
-            width={320}
-            placeholder='blur'
-            blurDataURL={"../public/Images/Project-Gwei-Logo.png"}
-          />
-
-          <div className='absolute left-[165px] xl:left-[500px] lg:left-[450px] sm:left-[400px] sm:top-1/4 top-[230px] transform duration-300'>
-            <button onClick={connectWallet}>
-              <Image src={MetaMask} alt='MetaMask Logo' width={60} className='cursor-pointer' />
-            </button>
-            <p>{isWalletConnected ? "Connected" : "Connect"}</p>
-          </div>
-        </div>
+      <div className='flex flex-row justify-center'>
+        <Image
+          src={ProjectGweihir}
+          alt='Project Gweihir Logo'
+          placeholder='blur'
+          blurDataURL={"../public/Images/Project-Gwei-Logo.png"}
+          className='w-[20rem] lg:w-[25rem] transform duration-300'
+        />
+      </div>
+      <div className='mx-auto flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
+        {/* <p className='text-gray-200 text-sm'>{isWalletConnected ? "Connected" : "Connect"}</p> */}
+        <button className='transform duration-300' onClick={connectWallet}>
+          {isWalletConnected ? (
+            <Image src={MetaMask} alt='MetaMask Logo' width={100} className='cursor-default' />
+          ) : (
+            <Image src={MetaMaskRed} alt='MetaMask Logo' width={100} className='animate-pulse' />
+          )}
+        </button>
       </div>
 
       <form
@@ -208,9 +210,9 @@ export default function Home() {
           localStorage.setItem("blockOrHash", data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
         })}
-        className='flex flex-col pt-[135px] sm:pt-12'
+        className='flex flex-col'
       >
-        <div className='flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center px-1'>
           <div className='w-full flex flex-col items-center'>
             <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
             {/* Should this be an autocomplete from Headless UI */}
@@ -235,7 +237,7 @@ export default function Home() {
             disabled={!isWalletConnected}
             title={isWalletConnected ? "" : "Connect your wallet to execute"}
             type='submit'
-            className={`mt-12 border-2 rounded p-2 w-full sm:w-96 transform duration-300 ${
+            className={`my-10 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
               isWalletConnected ? "" : "cursor-not-allowed"
             }`}
           >
@@ -249,7 +251,7 @@ export default function Home() {
       <a
         href='https://www.gweihir.io'
         target='_blank'
-        className='text-gray-200 hover:text-accent pb-5 text-sm text-center mx-auto pt-12'
+        className='text-gray-200 hover:text-accent pb-5 text-sm text-center mx-auto pt-4'
       >
         Learn more about Project Gweihir
       </a>
