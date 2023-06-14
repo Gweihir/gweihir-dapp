@@ -204,7 +204,7 @@ export default function Home() {
               src={MetaMaskRed}
               alt='MetaMask Logo'
               width={100}
-              className='animate-pulse hover:opacity-80'
+              className='animate-pulse hover:opacity-80 transform duration-300'
             />
           )}
         </button>

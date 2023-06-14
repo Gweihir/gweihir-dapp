@@ -31,9 +31,9 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
   return (
     <>
       <div className='flex justify-center'>
-        <div className='flex flex-row border-2 border-gray-600 rounded mx-auto w-full lg:w-2/3 xl:w-2/3 sm:duration-200 sm:hover:scale-105 sm:mx-0'>
+        <div className='flex flex-row border-2 border-gray-600 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:hover:scale-105 sm:mx-0'>
           <div
-            className={`w-3/12 hover:w-7/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-2/12 hover:w-7/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3 line-clamp-1'>
               {headings[0]}
@@ -65,7 +65,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               ))}
           </div>
           <div
-            className={`w-2/12 hover:w-6/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-2/12 hover:w-6/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
           >
             <h1 className='flex flex-row justify-center items-center py-1 sm:py-3 border border-b-2 border-gray-600'>
               {headings[1]}
@@ -96,7 +96,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               ))}
           </div>
           <div
-            className={`w-3/12 hover:w-7/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-3/12 hover:w-7/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3'>
               {headings[2]}
@@ -127,7 +127,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               ))}
           </div>
           <div
-            className={`w-2/12 hover:w-6/12 transform duration-300 border-r-2 border-gray-500 font-medium text-sm truncate`}
+            className={`w-3/12 hover:w-6/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3'>
               {headings[3]}
@@ -147,7 +147,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 >
                   {query.kusamaAccount ? (
                     <CopyButton text={query.kusamaAccount}>
-                      <p className='justify-center line-clamp-1 text-md hover:text-accent'>
+                      <p className='justify-center text-md hover:text-accent truncate'>
                         {query.kusamaAccount}
                       </p>
                     </CopyButton>
@@ -158,7 +158,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               ))}
           </div>
           <div
-            className={`w-2/12 hover:w-3/12 transform duration-300 font-medium text-sm truncate`}
+            className={`w-2/12 hover:w-[21%] transform duration-500 font-medium text-sm sm:text-base truncate`}
           >
             <h1 className='border border-b-2 border-gray-600 flex flex-row justify-center items-center py-1 sm:py-3'>
               {headings[4]}
@@ -181,10 +181,10 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                   {query.freePlank ? (
                     <CopyButton text={plankConversion(query.freePlank)?.toString()}>
                       <div className='flex flex-row justify-center items-center hover:text-accent'>
-                        <p className='line-clamp-1 text-md'>
-                          {reducedPlankConversion(query.freePlank)}
+                        <p className='text-md'>{reducedPlankConversion(query.freePlank)}</p>
+                        <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate'>
+                          KSM
                         </p>
-                        <p className='text-[.6rem] pl-0.5 flex items-center'>KSM</p>
                       </div>
                     </CopyButton>
                   ) : pending ? (
