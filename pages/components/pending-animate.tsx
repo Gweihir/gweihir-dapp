@@ -2,7 +2,7 @@ import React from "react"
 
 const Pending = () => {
   return (
-    <div className='flex flex-row justify-center text-xs sm:text-sm'>
+    <div className='flex flex-row justify-center text-xs sm:text-base'>
       <p className='animate-bounce-one'>p</p>
       <p className='animate-bounce-two'>e</p>
       <p className='animate-bounce-three'>n</p>

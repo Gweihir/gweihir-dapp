@@ -20,13 +20,15 @@ export default function Home() {
   const [queries, setQueries] = useState<KusamaQuery[]>([])
   const [pending, setPending] = useState<boolean>(false)
   const [waiting, setWaiting] = useState<boolean>(false)
-  const [balancePending, setBalancePending] = useState<boolean>(false)
 
   const cacheRef = useRef<QueryCacheService>()
 
-  const { register, handleSubmit } = useForm<IFormData>()
+  const { register, handleSubmit, formState } = useForm<IFormData>()
+  const { errors, touchedFields } = formState
+  // console.log("touchedFields", touchedFields)
+  // console.log("errors", errors)
 
-  async function connectWallet() {
+  async function connectWallet(shouldPromptOnNoAccounts = false) {
     if (!window.ethereum) {
       console.log("MetaMask not installed; using read-only defaults")
       return alert("MetaMask not installed") // TODO: Make more pretty
@@ -37,14 +39,33 @@ export default function Home() {
 
       setProvider(provider)
 
+      const accounts = await provider.listAccounts()
+
+      console.log("provider.ready", provider.ready)
+      // console.log("provider.hasSigner", provider.hasSigner)
+      console.log("provider.listAccounts", accounts)
+      console.log("provider.listenerCount", await provider.listenerCount())
+      // provider.getAvatar()
+
+      provider.ready
+
+      if (shouldPromptOnNoAccounts && !accounts.length) {
+        return
+      }
+
       const signer = await provider.getSigner()
       setSigner(signer)
 
       setIsWalletConnected(true)
     } catch (error) {
+      console.error(error)
       alert("MetaMask did not connect.")
     }
   }
+
+  useEffect(() => {
+    connectWallet(true)
+  }, [])
 
   useEffect(() => {
     cacheRef.current = QueryCacheService.createInstance()
@@ -56,7 +77,7 @@ export default function Home() {
       console.error("An error occurred:", error)
       return alert("An error has occurred.")
     }
-  }, [balancePending])
+  }, [])
 
   const saveRequest = (query: KusamaQuery) => {
     // Save query request to local storage
@@ -66,12 +87,12 @@ export default function Home() {
     }
   }
 
-  const updateRequest = (chainlinkId: string, query: Partial<KusamaQuery>) => {
+  const updateRequest = (txId: string, query: Partial<KusamaQuery>) => {
     if (cacheRef.current) {
       // setBalancePending(true)
       setPending(false)
 
-      cacheRef.current.update(chainlinkId, query)
+      cacheRef.current.update(txId, query)
       setQueries(cacheRef.current.getAll())
     }
   }
@@ -96,6 +117,13 @@ export default function Home() {
         [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
 
+      saveRequest({
+        txId: tx.hash,
+        kusamaBlock: kusamaBlockHash,
+        kusamaAccount: kusamaAddress,
+      })
+
+      // Waiting for Ethereum blockchain to run the function
       const receipt = await tx.wait()
       setPending(true)
       setWaiting(false)
@@ -120,17 +148,12 @@ export default function Home() {
         if (!chainlinkRequestId) {
           return alert("Chainlink request ID Missing.")
           // TODO: Handle missing Chainlink request id
-          return
         }
 
-        const query: KusamaQuery = {
+        // Save the Chainlink Request id
+        updateRequest(tx.hash, {
           chainlinkRequestId,
-          txId: tx.hash,
-          kusamaBlock: kusamaBlockHash,
-          kusamaAccount: kusamaAddress,
-        }
-
-        saveRequest(query)
+        })
 
         // Listen for the RequestUintValueFulfilled event to be emitted for the specific Chainlink request id
 
@@ -141,7 +164,7 @@ export default function Home() {
             // Filter by Chainlink request id
             if (chainlinkRequestId === _chainlinkRequestId) {
               setKusamaBalance(freePlank.toString())
-              updateRequest(chainlinkRequestId, {
+              updateRequest(tx.hash, {
                 freePlank: freePlank.toString(),
               })
 
@@ -155,25 +178,10 @@ export default function Home() {
     } catch (e) {
       // TODO: Handle error
       console.error(e)
+    } finally {
       setPending(false)
       setWaiting(false)
     }
-  }
-
-  function plankConversion(x: string | undefined): number | undefined {
-    if (x === undefined) {
-      return undefined
-    }
-    const result = parseFloat(x) / 10 ** 12
-    return parseFloat(result.toString())
-  }
-
-  function reducedPlankConversion(x: string | undefined): number | undefined {
-    if (x === undefined) {
-      return undefined
-    }
-    const result = parseFloat(x) / 10 ** 12
-    return parseFloat(result.toFixed(2))
   }
 
   return (
@@ -189,9 +197,9 @@ export default function Home() {
           className='w-[20rem] lg:w-[25rem] transform duration-300'
         />
       </div>
-      <div className='mx-auto flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
+      <div className='mx-auto sm:fixed flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
         {/* <p className='text-gray-200 text-sm'>{isWalletConnected ? "Connected" : "Connect"}</p> */}
-        <button className='transform duration-300' onClick={connectWallet}>
+        <button className='transform duration-300' onClick={() => connectWallet()}>
           {isWalletConnected ? (
             <Image
               src={MetaMask}
@@ -204,7 +212,7 @@ export default function Home() {
               src={MetaMaskRed}
               alt='MetaMask Logo'
               width={100}
-              className='animate-pulse hover:opacity-80 transform duration-300'
+              className='animate-pulse opacity-80 hover:opacity-100 transform duration-300'
             />
           )}
         </button>
@@ -213,6 +221,7 @@ export default function Home() {
       <form
         onSubmit={handleSubmit((data) => {
           // setWaiting(true)
+          console.log("data")
           localStorage.setItem("kusamaWallet", data.kusamaWallet)
           localStorage.setItem("blockOrHash", data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
@@ -224,9 +233,10 @@ export default function Home() {
             <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
             {/* Should this be an autocomplete from Headless UI */}
             <input
-              {...register("kusamaWallet")}
+              {...register("kusamaWallet", { required: true })}
               className='pl-1.5 h-8 w-full sm:w-96 md:w-7/12 lg:w-1/2 xl:w-1/3 bg-slate-200 rounded-sm text-black transform duration-300'
-            ></input>
+            />
+            {touchedFields.kusamaWallet && errors.kusamaWallet && <p>Required</p>}
           </div>
 
           <div className='w-full flex flex-col justify-center items-center'>
@@ -235,9 +245,10 @@ export default function Home() {
             </p>
             {/* Should this be an autocomplete from Headless UI */}
             <input
-              {...register("blockOrHash")}
+              {...register("blockOrHash", { required: true })}
               className='pl-1.5 h-8 w-full sm:w-96 md:w-7/12 lg:w-1/2 xl:w-1/3 bg-slate-200 rounded-sm text-black transform duration-300'
-            ></input>
+            />
+            {touchedFields.blockOrHash && errors.blockOrHash && <p>Required</p>}
           </div>
           {/* {cacheRef.current.cache} */}
           <button

@@ -3,7 +3,7 @@
 import { KusamaQuery } from "@/types"
 
 interface QueryCache {
-  [key: string]: KusamaQuery
+  [txId: string]: KusamaQuery
 }
 
 export class QueryCacheService {
@@ -36,7 +36,7 @@ export class QueryCacheService {
    * @throws
    */
   public save(query: KusamaQuery): KusamaQuery {
-    this.cache[query.chainlinkRequestId] = query
+    this.cache[query.txId] = query
     this.snapshotToLocalStorage()
 
     return query
@@ -46,11 +46,8 @@ export class QueryCacheService {
    * Look up query by chainlinkRequestId and update in cache and local storage
    * @throws
    */
-  public update(
-    chainlinkId: string,
-    query: Partial<Omit<KusamaQuery, "chainlinkRequestId">>
-  ): void {
-    const prev = this.getChainlinkById(chainlinkId)
+  public update(txId: string, query: Partial<Omit<KusamaQuery, "txId">>): void {
+    const prev = this.getQueryByTxId(txId)
 
     if (!prev) {
       throw new Error("Query not found")
@@ -58,7 +55,7 @@ export class QueryCacheService {
 
     const updated = { ...prev, ...query }
 
-    this.cache[chainlinkId] = updated
+    this.cache[txId] = updated
 
     this.snapshotToLocalStorage()
   }
@@ -66,8 +63,8 @@ export class QueryCacheService {
   /**
    * Get query from local storage by chainlinkId
    */
-  public getChainlinkById(chainlinkId: string): KusamaQuery | undefined {
-    return this.cache[chainlinkId]
+  public getQueryByTxId(txId: string): KusamaQuery | undefined {
+    return this.cache[txId]
   }
 
   public getAll(): KusamaQuery[] {
