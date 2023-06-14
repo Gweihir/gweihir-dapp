@@ -10,9 +10,6 @@ import { CHAINLINK_JOB_ID, CONSUMER_ADDRESS, ORACLE_ADDRESS } from "@/app-consta
 import { GeneralConsumer__factory } from "@/types/__generated__/contracts"
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
-import CopyButton from "./components/copy-button"
-import Pending from "./components/pending-animate"
-import Waiting from "./components/waiting-animate"
 import DesktopTable from "./components/desktop-table"
 
 export default function Home() {
@@ -196,9 +193,19 @@ export default function Home() {
         {/* <p className='text-gray-200 text-sm'>{isWalletConnected ? "Connected" : "Connect"}</p> */}
         <button className='transform duration-300' onClick={connectWallet}>
           {isWalletConnected ? (
-            <Image src={MetaMask} alt='MetaMask Logo' width={100} className='cursor-default' />
+            <Image
+              src={MetaMask}
+              alt='MetaMask Logo'
+              width={100}
+              className='cursor-default animate-fade_in'
+            />
           ) : (
-            <Image src={MetaMaskRed} alt='MetaMask Logo' width={100} className='animate-pulse' />
+            <Image
+              src={MetaMaskRed}
+              alt='MetaMask Logo'
+              width={100}
+              className='animate-pulse hover:opacity-80'
+            />
           )}
         </button>
       </div>

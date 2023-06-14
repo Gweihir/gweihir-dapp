@@ -50,14 +50,16 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               .map((query, index) => (
                 <div
                   key={query.txId}
-                  className={`px-2 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
                 >
                   {query.txId ? (
                     <CopyButton text={query.txId}>
-                      <p className='justify-center text-md hover:text-accent'>{query.txId}</p>
+                      <p className='justify-center text-md hover:text-accent truncate'>
+                        {query.txId}
+                      </p>
                     </CopyButton>
                   ) : (
-                    <p className='flex justify-center'>NA</p>
+                    <p>NA</p>
                   )}
                 </div>
               ))}
@@ -79,11 +81,11 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               .map((query, index) => (
                 <div
                   key={query.txId}
-                  className={`px-2 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
                 >
                   {query.chainlinkRequestId ? (
                     <CopyButton text={query.chainlinkRequestId}>
-                      <p className='justify-center line-clamp-1 text-md hover:text-accent'>
+                      <p className='justify-center text-md hover:text-accent truncate'>
                         {query.chainlinkRequestId}
                       </p>
                     </CopyButton>
@@ -110,11 +112,11 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               .map((query, index) => (
                 <div
                   key={query.txId}
-                  className={`px-2 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
                 >
                   {query.kusamaBlock ? (
                     <CopyButton text={query.kusamaBlock}>
-                      <p className='justify-center line-clamp-1 text-md hover:text-accent'>
+                      <p className='justify-center text-md hover:text-accent truncate'>
                         {query.kusamaBlock}
                       </p>
                     </CopyButton>
@@ -141,9 +143,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               .map((query, index) => (
                 <div
                   key={query.txId}
-                  className={`px-1 py-1 line-clamp-1 ${
-                    index % 2 === 0 ? "bg-slate-600" : "bg-none"
-                  }`}
+                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
                 >
                   {query.kusamaAccount ? (
                     <CopyButton text={query.kusamaAccount}>
@@ -174,7 +174,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
               .map((query, index) => (
                 <div
                   key={query.txId}
-                  className={`px-2 py-1 flex justify-center ${
+                  className={`px-1 py-1 flex justify-center ${
                     index % 2 === 0 ? "bg-slate-600" : "bg-none"
                   }`}
                 >

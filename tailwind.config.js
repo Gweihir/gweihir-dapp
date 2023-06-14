@@ -95,7 +95,7 @@ module.exports = {
       },
       animation: {
         fade_in: "fade_in 2s ease-out",
-        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) 3",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) 2",
         wiggle: "wiggle 10s ease-out",
         bounce: "bounce 1s ease-in-out infinite",
         "bounce-one": "bounce 2s ease-in-out 0s infinite",

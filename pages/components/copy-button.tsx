@@ -16,7 +16,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text, children }) => {
   }
 
   return (
-    <button title='Copy' onClick={copyToClipboard}>
+    <button className='w-full' title='Copy' onClick={copyToClipboard}>
       {children}
     </button>
   )
