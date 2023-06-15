@@ -6,8 +6,13 @@ import MetaMask from "../public/Images/metamask-connect.png"
 import MetaMaskRed from "../public/Images/metamask-red-connect.png"
 import { EventLog, ethers } from "ethers"
 import { useForm } from "react-hook-form"
-import { CHAINLINK_JOB_ID, CONSUMER_ADDRESS, ORACLE_ADDRESS } from "@/app-constants"
-import { GeneralConsumer__factory } from "@/types/__generated__/contracts"
+import {
+  CHAINLINK_JOB_ID,
+  CONSUMER_ADDRESS,
+  LINK_TOKEN_ADDRESS,
+  ORACLE_ADDRESS,
+} from "@/app-constants"
+import { GeneralConsumer__factory, LinkToken__factory } from "@/types/__generated__/contracts"
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
 import DesktopTable from "./components/desktop-table"
@@ -104,6 +109,16 @@ export default function Home() {
     setWaiting(true)
 
     try {
+      /**
+       * Have end user approve GeneralConsumer smart contract to transfer LINK from end user
+       * @see https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#IERC20-approve-address-uint256-
+       */
+      const linkContract = LinkToken__factory.connect(LINK_TOKEN_ADDRESS, signer)
+      const approvalTx = await linkContract.approve(CONSUMER_ADDRESS, BigInt("10000000000000000"))
+      console.log("approvalTx", approvalTx)
+      const approvalReceipt = await approvalTx.wait()
+      console.log("approvalReceipt", approvalReceipt)
+
       const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, signer)
 
       const oracleResponsePath = "data,free"
@@ -116,6 +131,7 @@ export default function Home() {
         ["address", "blockHash", "path"], // requestParamNames
         [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
+      console.log("tx", tx)
 
       saveRequest({
         txId: tx.hash,
@@ -125,6 +141,8 @@ export default function Home() {
 
       // Waiting for Ethereum blockchain to run the function
       const receipt = await tx.wait()
+      console.log("receipt", receipt)
+
       setPending(true)
       setWaiting(false)
       if (receipt) {
@@ -163,6 +181,8 @@ export default function Home() {
             console.log("event received", _chainlinkRequestId, freePlank, event)
             // Filter by Chainlink request id
             if (chainlinkRequestId === _chainlinkRequestId) {
+              console.log("got Kusama balance", freePlank.toString())
+
               setKusamaBalance(freePlank.toString())
               updateRequest(tx.hash, {
                 freePlank: freePlank.toString(),
