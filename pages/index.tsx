@@ -4,6 +4,7 @@ import Image from "next/image"
 import ProjectGweihir from "../public/Images/Project-Gwei-Logo.png"
 import MetaMask from "../public/Images/metamask-connect.png"
 import MetaMaskRed from "../public/Images/metamask-red-connect.png"
+import Spinner from "../public/Images/spinner_07.png"
 import { EventLog, ethers } from "ethers"
 import { useForm } from "react-hook-form"
 import {
@@ -50,7 +51,7 @@ export default function Home() {
       // console.log("provider.hasSigner", provider.hasSigner)
       console.log("provider.listAccounts", accounts)
       console.log("provider.listenerCount", await provider.listenerCount())
-      // provider.getAvatar()
+      // provider.getAvatar(accounts[0].address)
 
       provider.ready
 
@@ -95,7 +96,6 @@ export default function Home() {
   const updateRequest = (txId: string, query: Partial<KusamaQuery>) => {
     if (cacheRef.current) {
       // setBalancePending(true)
-      setPending(false)
 
       cacheRef.current.update(txId, query)
       setQueries(cacheRef.current.getAll())
@@ -132,6 +132,8 @@ export default function Home() {
         [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
       console.log("tx", tx)
+      setWaiting(false)
+      setPending(true)
 
       saveRequest({
         txId: tx.hash,
@@ -144,7 +146,6 @@ export default function Home() {
       console.log("receipt", receipt)
 
       setPending(true)
-      setWaiting(false)
       if (receipt) {
         setPending(true)
         // Get the Chainlink request id from the "ChainlinkRequested" event which can be found
@@ -187,6 +188,7 @@ export default function Home() {
               updateRequest(tx.hash, {
                 freePlank: freePlank.toString(),
               })
+              setPending(false)
 
               // Stop listening for event
               event.removedEvent()
@@ -198,15 +200,15 @@ export default function Home() {
     } catch (e) {
       // TODO: Handle error
       console.error(e)
-    } finally {
       setPending(false)
+    } finally {
       setWaiting(false)
     }
   }
 
   return (
     <main
-      className={`flex flex-col w-full min-h-screen px-0 sm:px-24 pt-6 bg-gradient-to-b from-slate-600 to-slate-800 transform duration-300 ${inter.className}`}
+      className={`flex flex-col w-full min-h-screen px-0 sm:px-24 pt-12 bg-gradient-to-b from-slate-600 to-slate-800 transform duration-300 ${inter.className}`}
     >
       <div className='flex flex-row justify-center'>
         <Image
@@ -214,7 +216,7 @@ export default function Home() {
           alt='Project Gweihir Logo'
           placeholder='blur'
           blurDataURL={"../public/Images/Project-Gwei-Logo.png"}
-          className='w-[20rem] lg:w-[25rem] transform duration-300 sm:pb-20'
+          className='w-[20rem] lg:w-[25rem] transform duration-300 sm:pb-16'
         />
       </div>
       <div className='mx-auto sm:fixed flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
@@ -240,7 +242,6 @@ export default function Home() {
 
       <form
         onSubmit={handleSubmit((data) => {
-          // setWaiting(true)
           console.log("data")
           localStorage.setItem("kusamaWallet", data.kusamaWallet)
           localStorage.setItem("blockOrHash", data.blockOrHash)
@@ -248,39 +249,61 @@ export default function Home() {
         })}
         className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center border-4 border-gray-600 justify-center px-2 bg-slate-700 mb-8 pb-8 pt-7 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
-          <div className='w-full flex flex-col items-center'>
-            <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
-            {/* Should this be an autocomplete from Headless UI */}
-            <input
-              {...register("kusamaWallet", { required: true })}
-              className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
-            />
-            {touchedFields.kusamaWallet && errors.kusamaWallet && <p>Required</p>}
-          </div>
+        <div className='flex flex-col items-center border-4 border-gray-600 justify-center px-2 bg-slate-700 mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
+          {!pending && !waiting ? (
+            <>
+              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-5'>
+                Query KSM wallet on ETH Blockchain
+              </h1>
+              <div className='w-full flex flex-col items-center'>
+                <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
+                {/* Should this be an autocomplete from Headless UI */}
+                <input
+                  {...register("kusamaWallet", { required: true })}
+                  className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
+                />
+                {touchedFields.kusamaWallet && errors.kusamaWallet && <p>Required</p>}
+              </div>
 
-          <div className='w-full flex flex-col justify-center items-center'>
-            <p className='text-gray-200 text-sm leading-4 pb-1 mt-5'>
-              Block number or hash to query at (optional)
-            </p>
-            {/* Should this be an autocomplete from Headless UI */}
-            <input
-              {...register("blockOrHash")}
-              className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
-            />
-            {touchedFields.blockOrHash && errors.blockOrHash && <p>Required</p>}
-          </div>
-          {/* {cacheRef.current.cache} */}
-          <button
-            disabled={!isWalletConnected}
-            title={isWalletConnected ? "" : "Connect your wallet to execute"}
-            type='submit'
-            className={`mt-10 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
-              isWalletConnected ? "" : "cursor-not-allowed"
-            }`}
+              <div className='w-full flex flex-col justify-center items-center'>
+                <p className='text-gray-200 text-sm leading-4 pb-1 mt-5'>
+                  Block number or hash to query at (optional)
+                </p>
+                {/* Should this be an autocomplete from Headless UI */}
+                <input
+                  {...register("blockOrHash")}
+                  className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
+                />
+                {touchedFields.blockOrHash && errors.blockOrHash && <p>Required</p>}
+              </div>
+              <button
+                disabled={!isWalletConnected}
+                title={isWalletConnected ? "" : "Connect your wallet to execute"}
+                type='submit'
+                className={`mt-8 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
+                  isWalletConnected ? "" : "cursor-not-allowed"
+                }`}
+              >
+                Execute
+              </button>
+            </>
+          ) : (
+            <>
+              <h1 className='pb-5 text-accent text-2xl font-semibold'>Request Initiated</h1>
+              <Image alt='spinner' src={Spinner} width={40} className='animate-spin-slower' />
+              <p className='pb-4 pt-5 px-4 w-full sm:w-96 text-center'>
+                While you wait, please do not refresh the screen and be sure to observe the prompts
+                coming from your MetaMask extension.
+              </p>
+            </>
+          )}
+          <a
+            href='https://www.gweihir.io'
+            target='_blank'
+            className='text-gray-200 hover:text-accent text-sm text-center mx-auto py-6'
           >
-            Execute
-          </button>
+            Learn more about Project Gweihir
+          </a>
         </div>
       </form>
       {/**
@@ -288,14 +311,6 @@ export default function Home() {
        */}
 
       <DesktopTable pending={pending} waiting={waiting} data={queries} />
-
-      <a
-        href='https://www.gweihir.io'
-        target='_blank'
-        className='text-gray-200 hover:text-accent pb-5 text-sm text-center mx-auto pt-4'
-      >
-        Learn more about Project Gweihir
-      </a>
     </main>
   )
 }

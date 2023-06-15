@@ -30,7 +30,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
   }
   return (
     <>
-      <div className='flex justify-center'>
+      <div className='flex justify-center pb-12'>
         <div className='flex flex-row border-2 border-gray-600 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:hover:scale-105 sm:mx-0'>
           <div
             className={`w-2/12 hover:w-7/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
@@ -59,7 +59,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                       </p>
                     </CopyButton>
                   ) : (
-                    <p>NA</p>
+                    <p>- -</p>
                   )}
                 </div>
               ))}
@@ -89,8 +89,12 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                         {query.chainlinkRequestId}
                       </p>
                     </CopyButton>
+                  ) : pending && index === 0 ? (
+                    <div>
+                      <Pending />
+                    </div>
                   ) : (
-                    <p className='flex justify-center'>NA</p>
+                    <p className='justify-center flex'>- -</p>
                   )}
                 </div>
               ))}
@@ -121,7 +125,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                       </p>
                     </CopyButton>
                   ) : (
-                    <p className='flex justify-center'>NA</p>
+                    <p className='flex justify-center'>- -</p>
                   )}
                 </div>
               ))}
@@ -152,7 +156,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                       </p>
                     </CopyButton>
                   ) : (
-                    <p className='flex justify-center'>NA</p>
+                    <p className='flex justify-center'>- -</p>
                   )}
                 </div>
               ))}
@@ -187,12 +191,12 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                         </p>
                       </div>
                     </CopyButton>
-                  ) : pending ? (
+                  ) : pending && index === 0 ? (
                     <div>
                       <Pending />
                     </div>
                   ) : (
-                    <p className='justify-center flex'>NA</p>
+                    <p className='justify-center flex'>- -</p>
                   )}
                 </div>
               ))}

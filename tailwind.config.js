@@ -109,7 +109,7 @@ module.exports = {
         "bounce-nine": "bounce 2s ease-in-out .86s infinite",
         "bounce-ten": "bounce 2s ease-in-out .98s infinite",
         "spin-slow": "spin 1s linear infinite",
-        "spin-slower": "spin 4s linear infinite",
+        "spin-slower": "spin 2.5s linear infinite",
         "spin-fast": "spin 0.3s linear infinite",
       },
     },
