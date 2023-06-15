@@ -128,7 +128,7 @@ export default function Home() {
         ORACLE_ADDRESS, // _oracle
         CHAINLINK_JOB_ID, // _jobId
         2, // resultType UINT_REQUEST_TYPE
-        ["address", "blockHash", "path"], // requestParamNames
+        ["address", "block", "path"], // requestParamNames
         [kusamaAddress, kusamaBlockHash, oracleResponsePath] // requestParamValues
       )
       console.log("tx", tx)
@@ -265,7 +265,7 @@ export default function Home() {
             </p>
             {/* Should this be an autocomplete from Headless UI */}
             <input
-              {...register("blockOrHash", { required: true })}
+              {...register("blockOrHash")}
               className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
             />
             {touchedFields.blockOrHash && errors.blockOrHash && <p>Required</p>}
@@ -283,6 +283,9 @@ export default function Home() {
           </button>
         </div>
       </form>
+      {/**
+       * TODO: Add link to subscan or polkadot app tools to verify Kusama balance matches dApp result for given block hash
+       */}
 
       <DesktopTable pending={pending} waiting={waiting} data={queries} />
 
