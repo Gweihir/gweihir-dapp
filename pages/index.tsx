@@ -214,7 +214,7 @@ export default function Home() {
           alt='Project Gweihir Logo'
           placeholder='blur'
           blurDataURL={"../public/Images/Project-Gwei-Logo.png"}
-          className='w-[20rem] lg:w-[25rem] transform duration-300'
+          className='w-[20rem] lg:w-[25rem] transform duration-300 sm:pb-20'
         />
       </div>
       <div className='mx-auto sm:fixed flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
@@ -246,15 +246,15 @@ export default function Home() {
           localStorage.setItem("blockOrHash", data.blockOrHash)
           requestBalance(data.kusamaWallet, data.blockOrHash)
         })}
-        className='flex flex-col'
+        className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center justify-center px-1'>
+        <div className='flex flex-col items-center border-4 border-gray-600 justify-center px-2 bg-slate-700 mb-8 pb-8 pt-7 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
           <div className='w-full flex flex-col items-center'>
             <p className='text-gray-200 text-sm leading-4 pb-1'>Kusama wallet to query</p>
             {/* Should this be an autocomplete from Headless UI */}
             <input
               {...register("kusamaWallet", { required: true })}
-              className='pl-1.5 h-8 w-full sm:w-96 md:w-7/12 lg:w-1/2 xl:w-1/3 bg-slate-200 rounded-sm text-black transform duration-300'
+              className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
             />
             {touchedFields.kusamaWallet && errors.kusamaWallet && <p>Required</p>}
           </div>
@@ -266,7 +266,7 @@ export default function Home() {
             {/* Should this be an autocomplete from Headless UI */}
             <input
               {...register("blockOrHash", { required: true })}
-              className='pl-1.5 h-8 w-full sm:w-96 md:w-7/12 lg:w-1/2 xl:w-1/3 bg-slate-200 rounded-sm text-black transform duration-300'
+              className='pl-1.5 h-8 w-full sm:w-[27rem] bg-slate-200 rounded-sm text-black transform duration-300'
             />
             {touchedFields.blockOrHash && errors.blockOrHash && <p>Required</p>}
           </div>
@@ -275,7 +275,7 @@ export default function Home() {
             disabled={!isWalletConnected}
             title={isWalletConnected ? "" : "Connect your wallet to execute"}
             type='submit'
-            className={`my-10 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
+            className={`mt-10 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
               isWalletConnected ? "" : "cursor-not-allowed"
             }`}
           >

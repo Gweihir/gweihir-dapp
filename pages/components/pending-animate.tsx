@@ -3,17 +3,17 @@ import React from "react"
 const Pending = () => {
   return (
     <div className='flex flex-row justify-center text-xs sm:text-base'>
-      <p className='animate-bounce-one'>p</p>
-      <p className='animate-bounce-two'>e</p>
-      <p className='animate-bounce-three'>n</p>
-      <p className='animate-bounce-four'>d</p>
-      <p className='animate-bounce-five'>i</p>
-      <p className='animate-bounce-six'>n</p>
-      <p className='animate-bounce-seven'>g</p>
+      <span className='animate-bounce-one'>p</span>
+      <span className='animate-bounce-two'>e</span>
+      <span className='animate-bounce-three'>n</span>
+      <span className='animate-bounce-four'>d</span>
+      <span className='animate-bounce-five'>i</span>
+      <span className='animate-bounce-six'>n</span>
+      <span className='animate-bounce-seven'>g</span>
       <div className='flex flex-row'>
-        <p className='animate-bounce-eight'>.</p>
-        <p className='animate-bounce-nine'>.</p>
-        <p className='animate-bounce-ten'>.</p>
+        <span className='animate-bounce-eight'>.</span>
+        <span className='animate-bounce-nine'>.</span>
+        <span className='animate-bounce-ten'>.</span>
       </div>
     </div>
   )
