@@ -1,4 +1,6 @@
 import { ethers } from "ethers"
+import { TypedContractEvent, TypedEventLog } from "@/types/__generated__/contracts/common"
+import { RequestUintValueFulfilledEvent } from "@/types/__generated__/contracts/GeneralConsumer"
 
 declare global {
   interface Window {
@@ -18,3 +20,11 @@ export interface KusamaQuery {
   /** The Kusama account balance in plank */
   freePlank?: string
 }
+
+export type RequestUintValueFulfilledEvent = TypedEventLog<
+  TypedContractEvent<
+    RequestUintValueFulfilledEvent.InputTuple,
+    RequestUintValueFulfilledEvent.OutputTuple,
+    RequestUintValueFulfilledEvent.OutputObject
+  >
+>

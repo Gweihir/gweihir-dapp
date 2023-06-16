@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Inter } from "next/font/google"
 import Image from "next/image"
 import ProjectGweihir from "../public/Images/Project-Gwei-Logo.png"
@@ -14,7 +14,7 @@ import {
   ORACLE_ADDRESS,
 } from "@/app-constants"
 import { GeneralConsumer__factory, LinkToken__factory } from "@/types/__generated__/contracts"
-import { KusamaQuery } from "@/types"
+import { KusamaQuery, RequestUintValueFulfilledEvent } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
 import DesktopTable from "./components/desktop-table"
 
@@ -22,46 +22,131 @@ export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
   const [provider, setProvider] = useState<ethers.BrowserProvider>()
   const [isWalletConnected, setIsWalletConnected] = useState(false)
-  const [kusamaBalance, setKusamaBalance] = useState<string>("")
   const [queries, setQueries] = useState<KusamaQuery[]>([])
   const [pending, setPending] = useState<boolean>(false)
   const [waiting, setWaiting] = useState<boolean>(false)
+  const [isInitiated, setIsInitiated] = useState(false)
 
   const cacheRef = useRef<QueryCacheService>()
+  const latestChainlinkRequestIdRef = useRef<string>()
 
   const { register, handleSubmit, formState } = useForm<IFormData>()
   const { errors, touchedFields } = formState
-  // console.log("touchedFields", touchedFields)
-  // console.log("errors", errors)
 
-  async function connectWallet(shouldPromptOnNoAccounts = false) {
+  /**
+   * Listen for the RequestUintValueFulfilled event to be emitted and filter for pending Chainlink requests.
+   * Update the query with the latest Kusama balance on a match.
+   */
+  const chainlinkFulfilledListener = useCallback((runner: ethers.ContractRunner) => {
+    const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, runner)
+
+    const callback = (
+      _chainlinkRequestId: string,
+      freePlank: bigint,
+      event: RequestUintValueFulfilledEvent
+    ) => {
+      console.log("event received", _chainlinkRequestId, freePlank, event)
+
+      const foundMatch = cacheRef.current
+        ?.getAllPendingChainlinkRequestIds()
+        .includes(_chainlinkRequestId)
+
+      // Filter by Chainlink request id
+      if (foundMatch) {
+        console.log("got Kusama balance", freePlank.toString())
+
+        updateRequestByChainlinkRequestId(_chainlinkRequestId, {
+          freePlank: freePlank.toString(),
+        })
+
+        // If this is the latest Chainlink request id, then stop pending UI
+        if (latestChainlinkRequestIdRef.current === _chainlinkRequestId) {
+          setPending(false)
+        }
+
+        // Stop listening for event
+        event.removedEvent()
+        // setBalancePending(false)
+      }
+    }
+
+    const eventName = contract.getEvent("RequestUintValueFulfilled")
+
+    contract.on(eventName, callback)
+
+    return () => {
+      contract.off(eventName, callback)
+    }
+  }, [])
+
+  /**
+   * On initial mount:
+   * - Check if window.ethereum is available
+   * - Set up provider
+   * - Attempt to auto-connect wallet
+   * - Set up event listener for fulfilled Chainlink requests events
+   */
+  useEffect(() => {
     if (!window.ethereum) {
       console.log("MetaMask not installed; using read-only defaults")
       return alert("MetaMask not installed") // TODO: Make more pretty
     }
+    const provider = new ethers.BrowserProvider(window.ethereum)
 
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum)
-
-      setProvider(provider)
-
-      const accounts = await provider.listAccounts()
-
-      if (shouldPromptOnNoAccounts && !accounts.length) {
-        return
-      }
-
+    // Attempt to "auto-connect" wallet
+    provider.listAccounts().then(async (accounts) => {
+      if (!accounts.length) return
       const signer = await provider.getSigner()
       setSigner(signer)
-
       setIsWalletConnected(true)
-    } catch (error) {
-      console.error(error)
-      alert("MetaMask did not connect.")
-    }
-  }
+    })
 
-  const [isInitiated, setIsInitiated] = useState(false)
+    setProvider(provider)
+
+    const unsubscribe = chainlinkFulfilledListener(provider)
+
+    return () => {
+      unsubscribe()
+    }
+  }, [chainlinkFulfilledListener])
+
+  // Addresses disconnect issue
+  const checkPendingQueries = useCallback(
+    async (provider: ethers.BrowserProvider, queries: KusamaQuery[]) => {
+      const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, provider)
+
+      queries
+        .filter((query): query is KusamaQuery & { chainlinkRequestId: string } => {
+          return !!query.chainlinkRequestId && query.freePlank === undefined
+        })
+        .map(async (query) => {
+          const [result, isSet] = await contract.getUintRequestResult(query.chainlinkRequestId)
+          console.log("lookup for", query.chainlinkRequestId, result, isSet)
+
+          if (isSet) {
+            updateRequestByChainlinkRequestId(query.chainlinkRequestId, {
+              freePlank: result.toString(),
+            })
+          }
+        })
+    },
+    []
+  )
+
+  /**
+   * Set up the query cache on initial mount
+   */
+  useEffect(() => {
+    cacheRef.current = QueryCacheService.createInstance()
+
+    try {
+      const queries = cacheRef.current.getAll()
+      setQueries(queries)
+    } catch (error) {
+      console.error("An error occurred:", error)
+      return alert("An error has occurred.")
+    }
+  }, [])
 
   // Check for pending queries if/when the user connects their wallet
   useEffect(() => {
@@ -75,30 +160,31 @@ export default function Home() {
 
         if (!accounts.length) return
 
-        checkPendingQueries()
+        checkPendingQueries(provider, queries)
       } catch (e) {
         console.error(e)
       }
 
       setIsInitiated(true)
     })()
-  }, [queries, provider, isInitiated])
+  }, [queries, provider, isInitiated, checkPendingQueries])
 
-  useEffect(() => {
-    cacheRef.current = QueryCacheService.createInstance()
+  /**
+   * Prompt user to connect their wallet if not already connected
+   */
+  async function connectWallet() {
+    if (!provider) return
 
     try {
-      const queries = cacheRef.current.getAll()
-      setQueries(queries)
-    } catch (error) {
-      console.error("An error occurred:", error)
-      return alert("An error has occurred.")
-    }
-  }, [])
+      const signer = await provider.getSigner()
+      setSigner(signer)
 
-  useEffect(() => {
-    connectWallet(true)
-  }, [])
+      setIsWalletConnected(true)
+    } catch (error) {
+      console.error(error)
+      alert("MetaMask did not connect.")
+    }
+  }
 
   const saveRequest = (query: KusamaQuery) => {
     // Save query request to local storage
@@ -108,11 +194,11 @@ export default function Home() {
     }
   }
 
-  const updateRequest = (txId: string, query: Partial<KusamaQuery>) => {
+  const updateRequestByTxId = (txId: string, query: Partial<KusamaQuery>) => {
     if (cacheRef.current) {
       // setBalancePending(true)
 
-      cacheRef.current.update(txId, query)
+      cacheRef.current.updateByTxId(txId, query)
       setQueries(cacheRef.current.getAll())
     }
   }
@@ -126,6 +212,7 @@ export default function Home() {
       setQueries(cacheRef.current.getAll())
     }
   }
+
   /**
    * Request kusama account balance
    * TODO: Maybe set up contract only once at connect time instead of every time we request Kusama balance
@@ -189,38 +276,17 @@ export default function Home() {
         const chainlinkRequestId = chainlinkRequestedEvent?.topics[1]
         console.log("requestId", chainlinkRequestId)
 
+        latestChainlinkRequestIdRef.current = chainlinkRequestId
+
         if (!chainlinkRequestId) {
           return alert("Chainlink request ID Missing.")
           // TODO: Handle missing Chainlink request id
         }
 
         // Save the Chainlink Request id
-        updateRequest(tx.hash, {
+        updateRequestByTxId(tx.hash, {
           chainlinkRequestId,
         })
-
-        // Listen for the RequestUintValueFulfilled event to be emitted for the specific Chainlink request id
-
-        contract.on(
-          contract.getEvent("RequestUintValueFulfilled"),
-          (_chainlinkRequestId, freePlank, event) => {
-            console.log("event received", _chainlinkRequestId, freePlank, event)
-            // Filter by Chainlink request id
-            if (chainlinkRequestId === _chainlinkRequestId) {
-              console.log("got Kusama balance", freePlank.toString())
-
-              setKusamaBalance(freePlank.toString())
-              updateRequest(tx.hash, {
-                freePlank: freePlank.toString(),
-              })
-              setPending(false)
-
-              // Stop listening for event
-              event.removedEvent()
-              // setBalancePending(false)
-            }
-          }
-        )
       }
     } catch (e) {
       // TODO: Handle error
@@ -229,26 +295,6 @@ export default function Home() {
     } finally {
       setWaiting(false)
     }
-  }
-
-  // Addresses disconnect issue
-  const checkPendingQueries = async () => {
-    const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, provider)
-
-    queries
-      .filter((query): query is KusamaQuery & { chainlinkRequestId: string } => {
-        return !!query.chainlinkRequestId && query.freePlank === undefined
-      })
-      .map(async (query) => {
-        const [result, isSet] = await contract.getUintRequestResult(query.chainlinkRequestId)
-        console.log("lookup for", query.chainlinkRequestId, result, isSet)
-
-        if (isSet) {
-          updateRequestByChainlinkRequestId(query.chainlinkRequestId, {
-            freePlank: result.toString(),
-          })
-        }
-      })
   }
 
   return (

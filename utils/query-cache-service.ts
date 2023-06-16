@@ -2,9 +2,7 @@
 
 import { KusamaQuery } from "@/types"
 
-interface QueryCache {
-  [txId: string]: KusamaQuery
-}
+type QueryCache = KusamaQuery[]
 
 export class QueryCacheService {
   private static _instance: QueryCacheService
@@ -16,7 +14,7 @@ export class QueryCacheService {
     const stringData = window.localStorage.getItem(this.cacheKey)
 
     if (!stringData) {
-      this.cache = {}
+      this.cache = []
     } else {
       const data = JSON.parse(stringData)
       this.cache = data
@@ -36,7 +34,18 @@ export class QueryCacheService {
    * @throws
    */
   public save(query: KusamaQuery): KusamaQuery {
-    this.cache[query.txId] = query
+    if (this.getQueryByTxId(query.txId)) {
+      this.updateByTxId(query.txId, query)
+    } else if (
+      query.chainlinkRequestId &&
+      this.getQueryByChainlinkReqId(query.chainlinkRequestId)
+    ) {
+      this.updateByChainlinkReqId(query.chainlinkRequestId, query)
+    } else {
+      // Save to front of cache array
+      this.cache.push(query)
+    }
+
     this.snapshotToLocalStorage()
 
     return query
@@ -46,7 +55,7 @@ export class QueryCacheService {
    * Look up query by chainlinkRequestId and update in cache and local storage
    * @throws
    */
-  public update(txId: string, query: Partial<Omit<KusamaQuery, "txId">>): void {
+  public updateByTxId(txId: string, query: Partial<Omit<KusamaQuery, "txId">>): void {
     const prev = this.getQueryByTxId(txId)
 
     if (!prev) {
@@ -55,7 +64,7 @@ export class QueryCacheService {
 
     const updated = { ...prev, ...query }
 
-    this.cache[txId] = updated
+    this.cache = this.cache.map((q) => (q.txId === txId ? updated : q))
 
     this.snapshotToLocalStorage()
   }
@@ -72,7 +81,7 @@ export class QueryCacheService {
 
     const updated = { ...prev, ...query }
 
-    this.cache[prev.txId] = updated
+    this.cache = this.cache.map((q) => (q.chainlinkRequestId === chainlinkRequestId ? updated : q))
 
     this.snapshotToLocalStorage()
   }
@@ -81,20 +90,27 @@ export class QueryCacheService {
    * Get query from local storage by chainlinkId
    */
   public getQueryByTxId(txId: string): KusamaQuery | undefined {
-    return this.cache[txId]
+    return this.cache.find((q) => q.txId === txId)
   }
 
   /**
    * Get query by chainlinkRequestId
    */
   public getQueryByChainlinkReqId(chainlinkRequestId: string): KusamaQuery | undefined {
-    const queries = this.getAll()
-
-    return queries.find((q) => q.chainlinkRequestId === chainlinkRequestId)
+    return this.cache.find((q) => q.chainlinkRequestId === chainlinkRequestId)
   }
 
   public getAll(): KusamaQuery[] {
-    return Object.values(this.cache)
+    return [...this.cache]
+  }
+
+  public getAllPendingChainlinkRequestIds(): string[] {
+    return this.cache
+      .filter(
+        (q): q is KusamaQuery & { chainlinkRequestId: string } =>
+          q.freePlank === undefined && !!q.chainlinkRequestId
+      )
+      .map((q) => q.chainlinkRequestId)
   }
 
   private snapshotToLocalStorage() {
