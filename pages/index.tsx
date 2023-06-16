@@ -17,6 +17,7 @@ import { GeneralConsumer__factory, LinkToken__factory } from "@/types/__generate
 import { KusamaQuery } from "@/types"
 import { QueryCacheService } from "@/utils/query-cache-service"
 import DesktopTable from "./components/desktop-table"
+import MobileTable from "./components/mobile-table"
 
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
@@ -355,6 +356,7 @@ export default function Home() {
        * TODO: Add link to subscan or polkadot app tools to verify Kusama balance matches dApp result for given block hash
        */}
 
+      <MobileTable pending={pending} waiting={waiting} data={queries} />
       <DesktopTable pending={pending} waiting={waiting} data={queries} />
     </main>
   )
