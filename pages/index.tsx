@@ -20,7 +20,7 @@ import DesktopTable from "./components/desktop-table"
 
 export default function Home() {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>()
-  const [provider, setProvider] = useState<ethers.BrowserProvider | ethers.AbstractProvider>()
+  const [provider, setProvider] = useState<ethers.BrowserProvider>()
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [kusamaBalance, setKusamaBalance] = useState<string>("")
   const [queries, setQueries] = useState<KusamaQuery[]>([])
@@ -47,14 +47,6 @@ export default function Home() {
 
       const accounts = await provider.listAccounts()
 
-      console.log("provider.ready", provider.ready)
-      // console.log("provider.hasSigner", provider.hasSigner)
-      console.log("provider.listAccounts", accounts)
-      console.log("provider.listenerCount", await provider.listenerCount())
-      // provider.getAvatar(accounts[0].address)
-
-      provider.ready
-
       if (shouldPromptOnNoAccounts && !accounts.length) {
         return
       }
@@ -69,9 +61,28 @@ export default function Home() {
     }
   }
 
+  const [isInitiated, setIsInitiated] = useState(false)
+
+  // Check for pending queries if/when the user connects their wallet
   useEffect(() => {
-    connectWallet(true)
-  }, [])
+    ;(async () => {
+      if (isInitiated) return
+      if (!provider) return
+      if (!queries.length) return
+
+      try {
+        const accounts = await provider.listAccounts()
+
+        if (!accounts.length) return
+
+        checkPendingQueries()
+      } catch (e) {
+        console.error(e)
+      }
+
+      setIsInitiated(true)
+    })()
+  }, [queries, provider, isInitiated])
 
   useEffect(() => {
     cacheRef.current = QueryCacheService.createInstance()
@@ -83,6 +94,10 @@ export default function Home() {
       console.error("An error occurred:", error)
       return alert("An error has occurred.")
     }
+  }, [])
+
+  useEffect(() => {
+    connectWallet(true)
   }, [])
 
   const saveRequest = (query: KusamaQuery) => {
@@ -98,6 +113,16 @@ export default function Home() {
       // setBalancePending(true)
 
       cacheRef.current.update(txId, query)
+      setQueries(cacheRef.current.getAll())
+    }
+  }
+
+  const updateRequestByChainlinkRequestId = (
+    chainlinkRequestId: string,
+    query: Partial<Omit<KusamaQuery, "chainlinkRequestId">>
+  ) => {
+    if (cacheRef.current) {
+      cacheRef.current.updateByChainlinkReqId(chainlinkRequestId, query)
       setQueries(cacheRef.current.getAll())
     }
   }
@@ -204,6 +229,26 @@ export default function Home() {
     } finally {
       setWaiting(false)
     }
+  }
+
+  // Addresses disconnect issue
+  const checkPendingQueries = async () => {
+    const contract = GeneralConsumer__factory.connect(CONSUMER_ADDRESS, provider)
+
+    queries
+      .filter((query): query is KusamaQuery & { chainlinkRequestId: string } => {
+        return !!query.chainlinkRequestId && query.freePlank === undefined
+      })
+      .map(async (query) => {
+        const [result, isSet] = await contract.getUintRequestResult(query.chainlinkRequestId)
+        console.log("lookup for", query.chainlinkRequestId, result, isSet)
+
+        if (isSet) {
+          updateRequestByChainlinkRequestId(query.chainlinkRequestId, {
+            freePlank: result.toString(),
+          })
+        }
+      })
   }
 
   return (

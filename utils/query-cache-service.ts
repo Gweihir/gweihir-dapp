@@ -60,11 +60,37 @@ export class QueryCacheService {
     this.snapshotToLocalStorage()
   }
 
+  public updateByChainlinkReqId(
+    chainlinkRequestId: string,
+    query: Partial<Omit<KusamaQuery, "chainlinkRequestId">>
+  ): void {
+    const prev = this.getQueryByChainlinkReqId(chainlinkRequestId)
+
+    if (!prev) {
+      throw new Error("Query not found")
+    }
+
+    const updated = { ...prev, ...query }
+
+    this.cache[prev.txId] = updated
+
+    this.snapshotToLocalStorage()
+  }
+
   /**
    * Get query from local storage by chainlinkId
    */
   public getQueryByTxId(txId: string): KusamaQuery | undefined {
     return this.cache[txId]
+  }
+
+  /**
+   * Get query by chainlinkRequestId
+   */
+  public getQueryByChainlinkReqId(chainlinkRequestId: string): KusamaQuery | undefined {
+    const queries = this.getAll()
+
+    return queries.find((q) => q.chainlinkRequestId === chainlinkRequestId)
   }
 
   public getAll(): KusamaQuery[] {

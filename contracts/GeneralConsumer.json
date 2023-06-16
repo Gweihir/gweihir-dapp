@@ -113,25 +113,6 @@
         {
           "indexed": true,
           "internalType": "bytes32",
-          "name": "requestId",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "freePlank",
-          "type": "uint256"
-        }
-      ],
-      "name": "RequestKusamaAccountBalanceFulfilled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
           "name": "_requestId",
           "type": "bytes32"
         },
@@ -336,7 +317,12 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSet",
           "type": "bool"
         }
       ],
@@ -369,19 +355,6 @@
       "name": "cancelRequest",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "currentAccountBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -448,6 +421,11 @@
       ],
       "name": "getBoolRequestResult",
       "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
         {
           "internalType": "bool",
           "name": "",
@@ -541,6 +519,11 @@
           "internalType": "string",
           "name": "",
           "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -579,6 +562,11 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -808,8 +796,13 @@
       "outputs": [
         {
           "internalType": "string",
-          "name": "",
+          "name": "result",
           "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSet",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -859,8 +852,13 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "result",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSet",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
