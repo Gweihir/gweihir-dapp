@@ -150,11 +150,14 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                   className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
                 >
                   {query.kusamaAccount ? (
-                    <CopyButton text={query.kusamaAccount}>
+                    <a
+                      target='_blank'
+                      href={`https://www.subscan.io/account/${query.kusamaAccount}`}
+                    >
                       <p className='justify-center text-md hover:text-accent truncate'>
                         {query.kusamaAccount}
                       </p>
-                    </CopyButton>
+                    </a>
                   ) : (
                     <p className='flex justify-center'>- -</p>
                   )}

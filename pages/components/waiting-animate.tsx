@@ -2,7 +2,7 @@ import React from "react"
 
 const Waiting = () => {
   return (
-    <div className='flex flex-row justify-center items-center relative text-sm sm:text-base line-clamp-1'>
+    <div className='flex flex-row justify-center items-center relative line-clamp-1'>
       <span className='line-clamp-1 animate-bounce-one'>w</span>
       <span className='line-clamp-1 animate-bounce-two'>a</span>
       <span className='line-clamp-1 animate-bounce-three'>i</span>

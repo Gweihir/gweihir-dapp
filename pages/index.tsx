@@ -358,7 +358,7 @@ export default function Home() {
               </div>
 
               <div className='w-full flex flex-col justify-center items-center'>
-                <p className='text-gray-200 text-sm leading-4 pb-1 mt-5'>
+                <p className='text-gray-200 text-sm leading-4 pb-1 mt-6'>
                   Block number or hash to query at (optional)
                 </p>
                 {/* Should this be an autocomplete from Headless UI */}
