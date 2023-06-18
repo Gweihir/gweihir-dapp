@@ -10,8 +10,9 @@ interface DesktopTableComponentProps {
   waiting: boolean
 }
 
-const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, waiting }) => {
+const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending, waiting }) => {
   const headings: string[] = ["Tx ID", "Req ID", "Block hash", "Wallet", "Balance"]
+  const reversedData = [...data].reverse()
 
   function plankConversion(x: string | undefined): number | undefined {
     if (x === undefined) {
@@ -44,25 +45,22 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 <Waiting />
               </div>
             )}
-            {data
-              .slice(waiting ? -9 : -10)
-              .reverse()
-              .map((query, index) => (
-                <div
-                  key={query.txId}
-                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
-                >
-                  {query.txId ? (
-                    <CopyButton text={query.txId}>
-                      <p className='justify-center text-md hover:text-accent truncate'>
-                        {query.txId}
-                      </p>
-                    </CopyButton>
-                  ) : (
-                    <p>- -</p>
-                  )}
-                </div>
-              ))}
+            {reversedData.map((query, index) => (
+              <div
+                key={query.txId}
+                className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+              >
+                {query.txId ? (
+                  <CopyButton text={query.txId}>
+                    <p className='justify-center text-md hover:text-accent truncate'>
+                      {query.txId}
+                    </p>
+                  </CopyButton>
+                ) : (
+                  <p>- -</p>
+                )}
+              </div>
+            ))}
           </div>
           <div
             className={`w-2/12 hover:w-6/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
@@ -75,29 +73,26 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 <Waiting />
               </div>
             )}
-            {data
-              .slice(waiting ? -9 : -10)
-              .reverse()
-              .map((query, index) => (
-                <div
-                  key={query.txId}
-                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
-                >
-                  {query.chainlinkRequestId ? (
-                    <CopyButton text={query.chainlinkRequestId}>
-                      <p className='justify-center text-md hover:text-accent truncate'>
-                        {query.chainlinkRequestId}
-                      </p>
-                    </CopyButton>
-                  ) : pending && index === 0 ? (
-                    <div>
-                      <Pending />
-                    </div>
-                  ) : (
-                    <p className='justify-center flex'>- -</p>
-                  )}
-                </div>
-              ))}
+            {reversedData.map((query, index) => (
+              <div
+                key={query.txId}
+                className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+              >
+                {query.chainlinkRequestId ? (
+                  <CopyButton text={query.chainlinkRequestId}>
+                    <p className='justify-center text-md hover:text-accent truncate'>
+                      {query.chainlinkRequestId}
+                    </p>
+                  </CopyButton>
+                ) : pending && index === 0 ? (
+                  <div>
+                    <Pending />
+                  </div>
+                ) : (
+                  <p className='justify-center flex'>- -</p>
+                )}
+              </div>
+            ))}
           </div>
           <div
             className={`w-3/12 hover:w-7/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
@@ -110,25 +105,22 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 <Waiting />
               </div>
             )}
-            {data
-              .slice(waiting ? -9 : -10)
-              .reverse()
-              .map((query, index) => (
-                <div
-                  key={query.txId}
-                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
-                >
-                  {query.kusamaBlock ? (
-                    <CopyButton text={query.kusamaBlock}>
-                      <p className='justify-center text-md hover:text-accent truncate'>
-                        {query.kusamaBlock}
-                      </p>
-                    </CopyButton>
-                  ) : (
-                    <p className='flex justify-center'>- -</p>
-                  )}
-                </div>
-              ))}
+            {reversedData.map((query, index) => (
+              <div
+                key={query.txId}
+                className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+              >
+                {query.kusamaBlock ? (
+                  <CopyButton text={query.kusamaBlock}>
+                    <p className='justify-center text-md hover:text-accent truncate'>
+                      {query.kusamaBlock}
+                    </p>
+                  </CopyButton>
+                ) : (
+                  <p className='flex justify-center'>- -</p>
+                )}
+              </div>
+            ))}
           </div>
           <div
             className={`w-3/12 hover:w-6/12 transform duration-500 border-r-2 border-gray-500 font-medium text-sm sm:text-base truncate`}
@@ -141,28 +133,22 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 <Waiting />
               </div>
             )}
-            {data
-              .slice(waiting ? -9 : -10)
-              .reverse()
-              .map((query, index) => (
-                <div
-                  key={query.txId}
-                  className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
-                >
-                  {query.kusamaAccount ? (
-                    <a
-                      target='_blank'
-                      href={`https://www.subscan.io/account/${query.kusamaAccount}`}
-                    >
-                      <p className='justify-center text-md hover:text-accent truncate'>
-                        {query.kusamaAccount}
-                      </p>
-                    </a>
-                  ) : (
-                    <p className='flex justify-center'>- -</p>
-                  )}
-                </div>
-              ))}
+            {reversedData.map((query, index) => (
+              <div
+                key={query.txId}
+                className={`px-1 py-1 ${index % 2 === 0 ? "bg-slate-600" : "bg-none"}`}
+              >
+                {query.kusamaAccount ? (
+                  <a target='_blank' href={`https://www.subscan.io/account/${query.kusamaAccount}`}>
+                    <p className='justify-center text-md hover:text-accent truncate'>
+                      {query.kusamaAccount}
+                    </p>
+                  </a>
+                ) : (
+                  <p className='flex justify-center'>- -</p>
+                )}
+              </div>
+            ))}
           </div>
           <div
             className={`w-2/12 hover:w-[21%] transform duration-500 font-medium text-sm sm:text-base truncate`}
@@ -175,34 +161,31 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data, pending, wai
                 <Waiting />
               </div>
             )}
-            {data
-              .slice(waiting ? -9 : -10)
-              .reverse()
-              .map((query, index) => (
-                <div
-                  key={query.txId}
-                  className={`px-1 py-1 flex justify-center ${
-                    index % 2 === 0 ? "bg-slate-600" : "bg-none"
-                  }`}
-                >
-                  {query.freePlank ? (
-                    <CopyButton text={plankConversion(query.freePlank)?.toString()}>
-                      <div className='flex flex-row justify-center items-center hover:text-accent'>
-                        <p className='text-md'>{reducedPlankConversion(query.freePlank)}</p>
-                        <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate'>
-                          KSM
-                        </p>
-                      </div>
-                    </CopyButton>
-                  ) : pending && index === 0 ? (
-                    <div>
-                      <Pending />
+            {reversedData.map((query, index) => (
+              <div
+                key={query.txId}
+                className={`px-1 py-1 flex justify-center ${
+                  index % 2 === 0 ? "bg-slate-600" : "bg-none"
+                }`}
+              >
+                {query.freePlank ? (
+                  <CopyButton text={plankConversion(query.freePlank)?.toString()}>
+                    <div className='flex flex-row justify-center items-center hover:text-accent'>
+                      <p className='text-md'>{reducedPlankConversion(query.freePlank)}</p>
+                      <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate'>
+                        KSM
+                      </p>
                     </div>
-                  ) : (
-                    <p className='justify-center flex'>- -</p>
-                  )}
-                </div>
-              ))}
+                  </CopyButton>
+                ) : pending && index === 0 ? (
+                  <div>
+                    <Pending />
+                  </div>
+                ) : (
+                  <p className='justify-center flex'>- -</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>

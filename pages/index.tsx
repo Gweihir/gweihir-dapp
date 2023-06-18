@@ -402,7 +402,7 @@ export default function Home() {
        * TODO: Add link to subscan or polkadot app tools to verify Kusama balance matches dApp result for given block hash
        */}
 
-      <MobileTable pending={pending} waiting={waiting} data={queries} />
+      {/* <MobileTable pending={pending} waiting={waiting} data={queries} /> */}
       <DesktopTable pending={pending} waiting={waiting} data={queries} />
     </main>
   )
