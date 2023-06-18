@@ -311,7 +311,7 @@ export default function Home() {
           className='w-[20rem] lg:w-[25rem] transform duration-300 sm:pb-16'
         />
       </div>
-      <div className='mx-auto sm:fixed flex flex-col pb-5 pt-3 justify-center items-center sm:right-16 transform duration-300'>
+      <div className='mx-auto sm:fixed flex flex-col pb-7 pt-6 justify-center items-center sm:right-16 transform duration-300'>
         {/* <p className='text-gray-200 text-sm'>{isWalletConnected ? "Connected" : "Connect"}</p> */}
         <button className='transform duration-300' onClick={() => connectWallet()}>
           {isWalletConnected ? (
@@ -341,10 +341,10 @@ export default function Home() {
         })}
         className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-80'>
+        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-5 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-80'>
           {!pending && !waiting ? (
             <>
-              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-4'>
+              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-6 sm:pb-4'>
                 Query KSM wallet on ETH Blockchain
               </h1>
               <div className='w-full flex flex-col items-center'>
@@ -388,7 +388,7 @@ export default function Home() {
                 coming from your MetaMask extension.
               </p>
               <p className=' pt-3 px-4 w-full sm:w-96 text-center text-sm text-accent'>
-                * Minimum Spending Cap Amount: 0.01 LINK
+                * Minimum Spending Cap: 0.01 LINK
               </p>
             </>
           )}
@@ -397,7 +397,7 @@ export default function Home() {
             target='_blank'
             className={`text-gray-200 hover:text-accent text-sm text-center mx-auto ${
               pending && waiting && "pt-5 pb-3"
-            } py-6`}
+            } pt-6 pb-3`}
           >
             Learn more about Project Gweihir
           </a>

@@ -62,9 +62,15 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
               }`}
             >
               {query.txId ? (
-                <CopyButton text={query.txId}>
-                  <p className='justify-center text-md hover:text-accent truncate'>{query.txId}</p>
-                </CopyButton>
+                <a
+                  target='_blank'
+                  title='Link'
+                  href={process.env.NEXT_PUBLIC_SEPOLIA_ETHERSCAN_TX + query.txId}
+                >
+                  <p className='justify-center text-md text-accent hover:text-white truncate'>
+                    {query.txId}
+                  </p>
+                </a>
               ) : (
                 <p>- -</p>
               )}
@@ -97,7 +103,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
             >
               {query.chainlinkRequestId ? (
                 <CopyButton text={query.chainlinkRequestId}>
-                  <p className='justify-center text-md hover:text-accent truncate'>
+                  <p className='justify-center text-md hover:text-gray-300 truncate'>
                     {query.chainlinkRequestId}
                   </p>
                 </CopyButton>
@@ -136,11 +142,15 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
               }`}
             >
               {query.kusamaBlock ? (
-                <CopyButton text={query.kusamaBlock}>
-                  <p className='justify-center text-md hover:text-accent truncate'>
+                <a
+                  target='_blank'
+                  title='Link'
+                  href={process.env.NEXT_PUBLIC_KUSAMA_SUBSCAN_BLOCK + query.kusamaBlock}
+                >
+                  <p className='justify-center text-md text-accent hover:text-white truncate'>
                     {query.kusamaBlock}
                   </p>
-                </CopyButton>
+                </a>
               ) : (
                 <p className='flex justify-center'>- -</p>
               )}
@@ -172,8 +182,12 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
               }`}
             >
               {query.kusamaAccount ? (
-                <a target='_blank' href={`https://www.subscan.io/account/${query.kusamaAccount}`}>
-                  <p className='justify-center text-md hover:text-accent truncate'>
+                <a
+                  target='_blank'
+                  title='Link'
+                  href={process.env.NEXT_PUBLIC_KUSAMA_SUBSCAN_WALLET + query.kusamaAccount}
+                >
+                  <p className='justify-center text-md text-accent hover:text-white truncate'>
                     {query.kusamaAccount}
                   </p>
                 </a>
@@ -209,7 +223,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
             >
               {query.freePlank ? (
                 <CopyButton text={plankConversion(query.freePlank)?.toString()}>
-                  <div className='flex flex-row justify-center items-center hover:text-accent'>
+                  <div className='flex flex-row justify-center items-center hover:text-gray-300'>
                     <p className='text-md'>{reducedPlankConversion(query.freePlank)}</p>
                     <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate'>
                       KSM
