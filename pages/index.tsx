@@ -341,7 +341,7 @@ export default function Home() {
         })}
         className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center border-4 border-gray-600 justify-center px-2 bg-slate-700 mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
+        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
           {!pending && !waiting ? (
             <>
               <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-5'>
@@ -402,7 +402,7 @@ export default function Home() {
        * TODO: Add link to subscan or polkadot app tools to verify Kusama balance matches dApp result for given block hash
        */}
 
-      {/* <MobileTable pending={pending} waiting={waiting} data={queries} /> */}
+      <MobileTable pending={pending} waiting={waiting} data={queries} />
       <DesktopTable pending={pending} waiting={waiting} data={queries} />
     </main>
   )
