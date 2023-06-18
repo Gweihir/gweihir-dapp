@@ -341,10 +341,10 @@ export default function Home() {
         })}
         className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0'>
+        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-6 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-80'>
           {!pending && !waiting ? (
             <>
-              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-5'>
+              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-4'>
                 Query KSM wallet on ETH Blockchain
               </h1>
               <div className='w-full flex flex-col items-center'>
@@ -358,7 +358,7 @@ export default function Home() {
               </div>
 
               <div className='w-full flex flex-col justify-center items-center'>
-                <p className='text-gray-200 text-sm leading-4 pb-1 mt-6'>
+                <p className='text-gray-200 text-sm leading-4 pb-1 mt-3'>
                   Block number or hash to query at (optional)
                 </p>
                 {/* Should this be an autocomplete from Headless UI */}
@@ -372,7 +372,7 @@ export default function Home() {
                 disabled={!isWalletConnected}
                 title={isWalletConnected ? "" : "Connect your wallet to execute"}
                 type='submit'
-                className={`mt-8 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
+                className={`mt-6 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
                   isWalletConnected ? "" : "cursor-not-allowed"
                 }`}
               >
@@ -383,16 +383,21 @@ export default function Home() {
             <>
               <h1 className='pb-5 text-accent text-2xl font-semibold'>Request Initiated</h1>
               <Image alt='spinner' src={Spinner} width={40} className='animate-spin-slower' />
-              <p className='pb-4 pt-5 px-4 w-full sm:w-96 text-center'>
+              <p className='pb-3 pt-5 px-4 w-full sm:w-96 text-center'>
                 While you wait, please do not refresh the screen and be sure to observe the prompts
                 coming from your MetaMask extension.
+              </p>
+              <p className=' pt-3 px-4 w-full sm:w-96 text-center text-sm text-accent'>
+                * Minimum Spending Cap Amount: 0.01 LINK
               </p>
             </>
           )}
           <a
             href='https://www.gweihir.io'
             target='_blank'
-            className='text-gray-200 hover:text-accent text-sm text-center mx-auto py-6'
+            className={`text-gray-200 hover:text-accent text-sm text-center mx-auto ${
+              pending && waiting && "pt-5 pb-3"
+            } py-6`}
           >
             Learn more about Project Gweihir
           </a>
