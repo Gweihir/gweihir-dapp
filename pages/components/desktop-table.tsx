@@ -11,7 +11,13 @@ interface DesktopTableComponentProps {
 }
 
 const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending, waiting }) => {
-  const headings: string[] = ["Tx ID", "Req ID", "Block hash", "Wallet", "Balance"]
+  const headings: string[] = [
+    "Tx ID",
+    "Chainlink Req ID",
+    "KSM Block",
+    "KSM Wallet",
+    "Free Balance",
+  ]
   const reversedData = [...data].reverse()
 
   function plankConversion(x: string | undefined): number | undefined {
@@ -78,7 +84,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
           ))}
         </div>
         <div
-          className={`w-2/12 hover:w-6/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
+          className={`w-3/12 hover:w-6/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
           <h1 className='flex flex-row justify-center items-center py-1 sm:py-3 border border-b-2 border-slate-600'>
             {headings[1]}
@@ -118,7 +124,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
           ))}
         </div>
         <div
-          className={`w-3/12 hover:w-7/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
+          className={`w-2/12 hover:w-7/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
           <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3'>
             {headings[2]}

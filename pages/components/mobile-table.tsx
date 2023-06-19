@@ -11,7 +11,13 @@ interface MobileTableComponentProps {
 }
 
 const MobileTable: React.FC<MobileTableComponentProps> = ({ data = [], pending, waiting }) => {
-  const headings: string[] = ["Tx ID", "Req ID", "Block hash", "Wallet", "Balance"]
+  const headings: string[] = [
+    "Tx ID",
+    "Chainlink Req ID",
+    "KSM Block",
+    "KSM Wallet",
+    "Free Balance",
+  ]
 
   function plankConversion(x: string | undefined): number | undefined {
     if (x === undefined) {
