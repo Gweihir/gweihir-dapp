@@ -383,11 +383,11 @@ export default function Home() {
             <>
               <h1 className='pb-5 text-accent text-2xl font-semibold'>Request Initiated</h1>
               <Image alt='spinner' src={Spinner} width={40} className='animate-spin-slower' />
-              <p className='pb-3 pt-5 px-4 w-full sm:w-96 text-center'>
+              <p className='pb-3 pt-5 px-4 w-full sm:w-96 text-center text-white'>
                 While you wait, please do not refresh the screen and be sure to observe the prompts
                 coming from your MetaMask extension.
               </p>
-              <p className=' pt-3 px-4 w-full sm:w-96 text-center text-sm text-accent'>
+              <p className='pt-3 px-4 w-full sm:w-96 text-center text-sm text-accent'>
                 * Minimum Spending Cap: 0.01 LINK
               </p>
             </>
