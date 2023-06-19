@@ -344,7 +344,7 @@ export default function Home() {
         <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-96'>
           {!pending && !waiting ? (
             <>
-              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-6 sm:pb-6'>
+              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-5 sm:pb-4'>
                 Query KSM wallet on ETH Blockchain
               </h1>
               <div className='w-full flex flex-col items-center'>
@@ -393,7 +393,7 @@ export default function Home() {
             </>
           )}
           <button
-            className={`text-slate-900 hover:bg-accent transform duration-300 active:bg-thirdinary rounded-md bg-primary font-semibold text-center mx-auto px-3 py-1 ${
+            className={`text-slate-900 hover:bg-accent transition-color duration-300 active:bg-thirdinary rounded-md bg-primary font-semibold text-center mx-auto px-3 py-1 ${
               pending && waiting && "mt-5 mb-3"
             } mt-7 mb-1`}
           >
