@@ -341,10 +341,10 @@ export default function Home() {
         })}
         className='flex flex-row justify-center'
       >
-        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 pt-5 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-80'>
+        <div className='flex flex-col items-center border-4 border-slate-500 sm:border-slate-600 justify-center px-2 bg-slate-700 mb-8 sm:mb-12 rounded mx-auto w-full lg:w-3/4 xl:w-2/3 sm:duration-200 sm:mx-0 h-96'>
           {!pending && !waiting ? (
             <>
-              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-6 sm:pb-4'>
+              <h1 className='text-accent sm:text-lg lg:text-xl leading-4 pb-6 sm:pb-6'>
                 Query KSM wallet on ETH Blockchain
               </h1>
               <div className='w-full flex flex-col items-center'>
@@ -358,7 +358,7 @@ export default function Home() {
               </div>
 
               <div className='w-full flex flex-col justify-center items-center'>
-                <p className='text-gray-200 text-sm leading-4 pb-1 mt-3'>
+                <p className='text-gray-200 text-sm leading-4 pb-1 mt-5'>
                   Block number or hash to query at (optional)
                 </p>
                 {/* Should this be an autocomplete from Headless UI */}
@@ -372,7 +372,7 @@ export default function Home() {
                 disabled={!isWalletConnected}
                 title={isWalletConnected ? "" : "Connect your wallet to execute"}
                 type='submit'
-                className={`mt-6 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
+                className={`mt-7 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
                   isWalletConnected ? "" : "cursor-not-allowed"
                 }`}
               >
@@ -392,12 +392,21 @@ export default function Home() {
               </p>
             </>
           )}
+          <button
+            className={`text-slate-900 hover:bg-accentMono rounded-md bg-accent font-medium text-center mx-auto px-3 py-1 ${
+              pending && waiting && "mt-5 mb-3"
+            } mt-7 mb-1`}
+          >
+            <a href='https://faucets.chain.link/sepolia' target='_blank'>
+              Get Testnet Tokens
+            </a>
+          </button>
           <a
             href='https://www.gweihir.io'
             target='_blank'
             className={`text-gray-200 hover:text-accent text-sm text-center mx-auto ${
               pending && waiting && "pt-5 pb-3"
-            } pt-6 pb-3`}
+            } pt-4`}
           >
             Learn more about Project Gweihir
           </a>
