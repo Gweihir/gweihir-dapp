@@ -119,7 +119,7 @@ const MobileTable: React.FC<MobileTableComponentProps> = ({ data = [], pending, 
                     </a>
                   </div>
                 ) : (
-                  <p>- -</p>
+                  <p className='text-white'>- -</p>
                 )}
               </div>
               <div className='font-medium w-1/2 truncate bg-slate-700'>
@@ -183,7 +183,7 @@ const MobileTable: React.FC<MobileTableComponentProps> = ({ data = [], pending, 
                       <p className='mx-2 pt-1.5 text-accent truncate h-8'>{query.kusamaAccount}</p>
                     </a>
                   ) : (
-                    <p className='flex justify-center'>- -</p>
+                    <p className='flex justify-center text-white'>- -</p>
                   )}
                 </div>
               </div>
@@ -213,7 +213,7 @@ const MobileTable: React.FC<MobileTableComponentProps> = ({ data = [], pending, 
                     <Pending />
                   </div>
                 ) : (
-                  <p className='justify-center flex'>- -</p>
+                  <p className='justify-center flex text-white'>- -</p>
                 )}
               </div>
             </div>
