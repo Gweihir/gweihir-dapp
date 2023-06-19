@@ -372,7 +372,7 @@ export default function Home() {
                 disabled={!isWalletConnected}
                 title={isWalletConnected ? "" : "Connect your wallet to execute"}
                 type='submit'
-                className={`mt-7 border-2 hover:border-accent hover:text-accent rounded p-2 w-full sm:w-96 transform duration-300 ${
+                className={`mt-7 border-2 hover:border-accent hover:text-accent text-white rounded p-2 w-full sm:w-96 transform duration-300 ${
                   isWalletConnected ? "" : "cursor-not-allowed"
                 }`}
               >
