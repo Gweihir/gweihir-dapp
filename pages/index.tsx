@@ -393,7 +393,7 @@ export default function Home() {
             </>
           )}
           <button
-            className={`text-slate-900 hover:bg-accentMono rounded-md bg-accent font-medium text-center mx-auto px-3 py-1 ${
+            className={`text-slate-900 hover:bg-accent active:bg-thirdinary rounded-md bg-primary font-bold text-center mx-auto px-3 py-1 ${
               pending && waiting && "mt-5 mb-3"
             } mt-7 mb-1`}
           >
