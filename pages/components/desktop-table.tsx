@@ -45,7 +45,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
         <div
           className={`w-2/12 hover:w-7/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
-          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3 line-clamp-1'>
+          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3 line-clamp-1 text-white'>
             {headings[0]}
           </h1>
 
@@ -86,7 +86,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
         <div
           className={`w-3/12 hover:w-6/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
-          <h1 className='flex flex-row justify-center items-center py-1 sm:py-3 border border-b-2 border-slate-600'>
+          <h1 className='flex flex-row justify-center items-center py-1 sm:py-3 border border-b-2 border-slate-600 text-white'>
             {headings[1]}
           </h1>
           {waiting && (
@@ -109,7 +109,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
             >
               {query.chainlinkRequestId ? (
                 <CopyButton text={query.chainlinkRequestId}>
-                  <p className='justify-center text-md hover:text-gray-300 truncate'>
+                  <p className='justify-center text-md hover:text-gray-300 text-white truncate'>
                     {query.chainlinkRequestId}
                   </p>
                 </CopyButton>
@@ -118,7 +118,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
                   <Pending />
                 </div>
               ) : (
-                <p className='justify-center flex'>- -</p>
+                <p className='justify-center flex text-white'>- -</p>
               )}
             </div>
           ))}
@@ -126,7 +126,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
         <div
           className={`w-2/12 hover:w-7/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
-          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3'>
+          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3 text-white'>
             {headings[2]}
           </h1>
           {waiting && (
@@ -166,7 +166,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
         <div
           className={`w-3/12 hover:w-6/12 transform duration-500 border-r-2 border-slate-500 font-medium text-sm sm:text-base truncate`}
         >
-          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3'>
+          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3 text-white'>
             {headings[3]}
           </h1>
           {waiting && (
@@ -198,7 +198,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
                   </p>
                 </a>
               ) : (
-                <p className='flex justify-center'>- -</p>
+                <p className='flex justify-center text-white'>- -</p>
               )}
             </div>
           ))}
@@ -206,7 +206,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
         <div
           className={`w-2/12 hover:w-[21%] transform duration-500 font-medium text-sm sm:text-base truncate`}
         >
-          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3'>
+          <h1 className='border border-b-2 border-slate-600 flex flex-row justify-center items-center py-1 sm:py-3 text-white'>
             {headings[4]}
           </h1>
           {waiting && (
@@ -229,9 +229,11 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
             >
               {query.freePlank ? (
                 <CopyButton text={plankConversion(query.freePlank)?.toString()}>
-                  <div className='flex flex-row justify-center items-center hover:text-gray-300'>
-                    <p className='text-md'>{reducedPlankConversion(query.freePlank)}</p>
-                    <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate'>
+                  <div className='flex flex-row justify-center items-center hover:text-gray-300 text-white'>
+                    <p className='text-md hover:text-gray-300 text-white'>
+                      {reducedPlankConversion(query.freePlank)}
+                    </p>
+                    <p className='text-[.5rem] sm:text-[.6rem] pl-0.5 flex items-center truncate hover:text-gray-300 text-white'>
                       KSM
                     </p>
                   </div>
@@ -241,7 +243,7 @@ const DesktopTable: React.FC<DesktopTableComponentProps> = ({ data = [], pending
                   <Pending />
                 </div>
               ) : (
-                <p className='justify-center flex'>- -</p>
+                <p className='justify-center flex text-white'>- -</p>
               )}
             </div>
           ))}
